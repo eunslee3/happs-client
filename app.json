@@ -32,10 +32,33 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            {
+              "src": "./assets/fonts/Poppins-Regular.ttf",
+              "fontFamily": "Poppins-Regular"
+            },
+            {
+              "src": "./assets/fonts/Poppins-Bold.ttf",
+              "fontFamily": "Poppins-Bold"
+            },
+            {
+              "src": "./assets/fonts/Poppins-Medium.ttf",
+              "fontFamily": "Poppins-Medium"
+            }
+          ]
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "assetBundlePatterns": [
+      "**/*",
+      "assets/fonts/*"
+    ]
   }
 }
