@@ -1,10 +1,23 @@
-import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
+  const handleTextChange = (e: any, type: 'username' | 'password') => {
+    const setters: Record<typeof type, React.Dispatch<React.SetStateAction<string>>> = {
+      username: setUsername,
+      password: setPassword,
+    }
+    setters[type](e)
+  }
+
+  console.log({ username, password })
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.whiteSpace}>
         <View style={styles.topTextContainer}>
           <Text style={styles.header}>Sign in</Text>
@@ -13,11 +26,16 @@ export default function Login() {
           </Text>
         </View>
         <View style={styles.textInputContainer}>
-          <TextInput style={styles.textInput} placeholder="Username/Email" />
+          <TextInput 
+            style={styles.textInput} 
+            placeholder="Username/Email"
+            onChangeText={(e) => {handleTextChange(e, 'username')}}
+          />
           <TextInput
             style={styles.textInput}
             placeholder="Password"
             secureTextEntry={true}
+            onChangeText={(e) => {handleTextChange(e, 'password')}}
           />
         </View>
         <View style={styles.forgotPasswordContainer}>
@@ -37,13 +55,22 @@ export default function Login() {
         </View>
         <View style={styles.thirdPartyLoginsContainer}>
           <Pressable style={styles.thirdPartyButton}>
-            <Text>Google</Text>
+            <Image source={require('../../assets/images/Google.png')}/>
+            <Text style={styles.buttonText}>Google</Text>
           </Pressable>
           <Pressable style={styles.thirdPartyButton}>
-            <Text>Apple</Text>
+            <Image source={require('../../assets/images/Apple.png')}/>
+            <Text style={styles.buttonText}>Apple</Text>
           </Pressable>
         </View>
+        <View style={styles.bottomContainer}>
+          <View style={styles.signupTextContainer}>
+            <Text style={styles.signupTextLightWeight}>Don't have an account?</Text>
+            <Text style={styles.signupText}>Sign up</Text>
+          </View>
+        </View>
       </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
@@ -127,6 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   thirdPartyButton: {
+    flexDirection: "row",
     width: 150,
     height: 60,
     borderColor: 'grey',
@@ -134,5 +162,26 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center"
+  },
+  buttonText: {
+    fontWeight: "bold",
+    marginLeft: 5
+  },
+  bottomContainer: {
+    flexGrow: 1,
+    padding: 20,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
+  signupTextContainer: {
+    flexDirection: 'row'
+  },
+  signupTextLightWeight: {
+    color: '#9DA1A5',
+    marginRight: 2,
+    fontSize: 15,
+  },
+  signupText: {
+    fontSize: 15,
   }
 });
