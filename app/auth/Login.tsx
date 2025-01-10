@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { authenticateApi } from '@/api/auth/authenticateApi';
+import { googleAuthApi } from '@/api/auth/googleAuthApi';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -15,6 +17,17 @@ export default function Login() {
   }
 
   console.log({ username, password })
+
+  const handleSubmit = async () => {
+    const response = await authenticateApi(username, password);
+    console.log(response);
+  }
+
+  const handleGoogleAuth = async () => {
+    const response = await googleAuthApi();
+    console.log(response)
+  }
+  
   return (
     <SafeAreaView style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -42,7 +55,7 @@ export default function Login() {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </View>
         <View>
-          <Pressable style={styles.signInButton}>
+          <Pressable style={styles.signInButton} onPress={handleSubmit}>
             <Text style={styles.signInButtonText}>Sign In</Text>
           </Pressable>
           <View style={styles.dividerContainer}>
@@ -54,7 +67,7 @@ export default function Login() {
           </View>
         </View>
         <View style={styles.thirdPartyLoginsContainer}>
-          <Pressable style={styles.thirdPartyButton}>
+          <Pressable style={styles.thirdPartyButton} onPress={handleGoogleAuth}>
             <Image source={require('../../assets/images/Google.png')}/>
             <Text style={styles.buttonText}>Google</Text>
           </Pressable>
