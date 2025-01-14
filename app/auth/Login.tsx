@@ -58,15 +58,15 @@ export default function Login() {
           <Pressable style={styles.signInButton} onPress={handleSubmit}>
             <Text style={styles.signInButtonText}>Sign In</Text>
           </Pressable>
-          <View style={styles.dividerContainer}>
+          {/* <View style={styles.dividerContainer}>
             <View style={styles.dividerLines} />
             <View>
               <Text style={styles.dividerText}>OR</Text>
             </View>
             <View style={styles.dividerLines} />
-          </View>
+          </View> */}
         </View>
-        <View style={styles.thirdPartyLoginsContainer}>
+        {/* <View style={styles.thirdPartyLoginsContainer}>
           <Pressable style={styles.thirdPartyButton} onPress={handleGoogleAuth}>
             <Image source={require('../../assets/images/Google.png')}/>
             <Text style={styles.buttonText}>Google</Text>
@@ -75,7 +75,7 @@ export default function Login() {
             <Image source={require('../../assets/images/Apple.png')}/>
             <Text style={styles.buttonText}>Apple</Text>
           </Pressable>
-        </View>
+        </View> */}
         <View style={styles.bottomContainer}>
           <View style={styles.signupTextContainer}>
             <Text style={styles.signupTextLightWeight}>Don't have an account?</Text>
