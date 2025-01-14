@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFe
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authenticateApi } from '@/api/auth/authenticateApi';
 import { googleAuthApi } from '@/api/auth/googleAuthApi';
+import { Link } from 'expo-router';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -79,7 +80,11 @@ export default function Login() {
         <View style={styles.bottomContainer}>
           <View style={styles.signupTextContainer}>
             <Text style={styles.signupTextLightWeight}>Don't have an account?</Text>
-            <Text style={styles.signupText}>Sign up</Text>
+            <Link href="/auth/Signup" asChild>
+              <Pressable>
+                <Text style={styles.signupText}>Sign up</Text>
+              </Pressable>
+            </Link>
           </View>
         </View>
       </View>
@@ -191,10 +196,10 @@ const styles = StyleSheet.create({
   },
   signupTextLightWeight: {
     color: '#9DA1A5',
-    marginRight: 2,
-    fontSize: 15,
+    marginRight: 4,
+    fontSize: 18,
   },
   signupText: {
-    fontSize: 15,
+    fontSize: 18,
   }
 });
