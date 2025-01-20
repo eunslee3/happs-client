@@ -3,11 +3,13 @@ import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFe
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authenticateApi } from '@/api/auth/authenticateApi';
 import { googleAuthApi } from '@/api/auth/googleAuthApi';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter()
 
   const handleTextChange = (e: any, type: 'email' | 'password') => {
     const setters: Record<typeof type, React.Dispatch<React.SetStateAction<string>>> = {
@@ -18,14 +20,21 @@ export default function Login() {
   }
 
   const handleSubmit = async () => {
-    const response = await authenticateApi(email, password);
-    console.log(response);
+    const response: any = await authenticateApi(email, password);
+    if (response.data.status === 200) {
+      router.push('/(tabs)')
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed Login',
+        text2: 'Please check your email or password',
+      })
+    }
   }
 
-  const handleGoogleAuth = async () => {
-    const response = await googleAuthApi();
-    console.log(response)
-  }
+  // const handleGoogleAuth = async () => {
+  //   const response = await googleAuthApi();
+  // }
   
   return (
     <SafeAreaView style={styles.container}>
