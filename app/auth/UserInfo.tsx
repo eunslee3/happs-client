@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerApi } from '@/api/auth/registerApi';
-import { Link, useRouter } from 'expo-router';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { updateUserInfoApi } from '@/api/user/updateUserInfoApi';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message'
 import * as yup from 'yup'
 
 export default function Signup() {
-  const [registerObj, setRegisterObj] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
+  const [userInfo, setUserInfo] = useState({
+    username: '',
+    firstName: '',
+    lastName: ''
   });
   const router = useRouter();
+  const { id } = useLocalSearchParams();
 
-  const registerSchema = yup.object().shape({
-    email: yup.string().email(),
-    password: yup.string().required(),
-    confirmPassword: yup.string().required()
+  const userInfoSchema = yup.object().shape({
+    username: yup.string().required(),
+    firstName: yup.string().required(),
+    lastName: yup.string().required()
   })
 
-  const handleTextChange = (e: any, type: 'email' | 'password' | 'confirmPassword') => {
-    setRegisterObj((prevState) => (
+  const handleTextChange = (e: any, type: 'username' | 'firstName' | 'lastName') => {
+    setUserInfo((prevState) => (
       {
         ...prevState,
         [type]: e
@@ -30,55 +30,36 @@ export default function Signup() {
     ))
   }
 
-  const showToast = (toastType: string, errName?: any, errMsg?: any) => {
-    if (toastType === 'passwordErr') {
-      Toast.show({
-        type: 'error',
-        text1: 'Password Mismatch',
-        text2: 'Passwords do not match!'
-      });
-    } else if (toastType === 'validationErr') {
-      Toast.show({
-        type: 'error',
-        text1: errName,
-        text2: errMsg[0]
-      });
-    }
+  const showToast = (errName?: any, errMsg?: any) => {
+    Toast.show({
+      type: 'error',
+      text1: errName
+    });
   }
 
   const handleValidation = async () => {
     try {
-      await registerSchema.validate(registerObj);
+      await userInfoSchema.validate(userInfo);
     } catch (err: any) {
-      showToast('validationErr', 'Registration Error', err.errors);
-      return;
-    }
-
-    if (registerObj.password !== registerObj.confirmPassword) {
-      showToast('passwordErr');
+      showToast('Fill Out Required Fields', err.errors);
       return;
     }
   }
 
   const handleSubmit = async () => {
     handleValidation();
-
     try {
-      const response = await registerApi({email: registerObj?.email, password: registerObj?.password});
+      const response = await updateUserInfoApi({ id, ...userInfo });
+      console.log(response.data);
       if (response.err) {
         return;
       } else {
         router.push({
-          pathname: '/auth/ConfirmToken',
-          params: {
-            id: response.data.id,
-            email: response.data?.email
-          }
+          pathname: '/(tabs)',
         });
       }
     } catch (err) {
       console.log(err);
-      // showToast('apiErr');
       return;
     }
   }
@@ -87,37 +68,32 @@ export default function Signup() {
     <SafeAreaView style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.whiteSpace}>
-        <Pressable onPress={() => {router.back()}}>
-          <AntDesign name="left" size={24} color="black" />
-        </Pressable>
         <View style={styles.topTextContainer}>
-          <Text style={styles.header}>Create an account</Text>
+          <Text style={styles.header}>Personal Information</Text>
           <Text style={styles.subHeader}>
-            Lets get started! Enter your details to create an account.
+            One more thing. Please provide your information.
           </Text>
         </View>
         <View style={styles.textInputContainer}>
           <TextInput 
             style={styles.textInput} 
-            placeholder="Email"
-            onChangeText={(e) => {handleTextChange(e, 'email')}}
+            placeholder="Username"
+            onChangeText={(e) => {handleTextChange(e, 'username')}}
           />
           <TextInput 
             style={styles.textInput} 
-            placeholder="Password"
-            secureTextEntry={true}
-            onChangeText={(e) => {handleTextChange(e, 'password')}}
+            placeholder="First Name"
+            onChangeText={(e) => {handleTextChange(e, 'firstName')}}
           />
           <TextInput
             style={styles.textInput}
-            placeholder="Confirm Password"
-            secureTextEntry={true}
-            onChangeText={(e) => {handleTextChange(e, 'confirmPassword')}}
+            placeholder="Last Name"
+            onChangeText={(e) => {handleTextChange(e, 'lastName')}}
           />
         </View>
         <View>
           <Pressable style={styles.signUpButton} onPress={handleSubmit}>
-            <Text style={styles.signUpButtonText}>Sign Up </Text>
+            <Text style={styles.signUpButtonText}>Continue</Text>
           </Pressable>
         </View>
       </View>

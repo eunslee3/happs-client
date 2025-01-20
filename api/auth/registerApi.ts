@@ -1,5 +1,5 @@
 import { instance } from '../axiosInstance';
-
+import axios from 'axios'
 interface RegisterProps {
   password: string;
   email: string;
@@ -11,9 +11,9 @@ export const registerApi = async (registerObj: RegisterProps) => {
       email: registerObj.email,
       password: registerObj.password
     });
-    return response
-  } catch (err) {
-    console.log(err);
+    return response;
+  } catch (err: any) {
+    console.log(err.message);
     return err;
   }
 }

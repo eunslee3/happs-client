@@ -1,9 +1,9 @@
 import { instance } from '../axiosInstance';
 
-export const authenticateApi = async (username: string, password: string) => {
+export const authenticateApi = async (email: string, password: string) => {
   try {
     const response  = await instance.post('/auth/validate-user', {
-      username,
+      email,
       password
     });
     return response

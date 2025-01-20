@@ -6,21 +6,19 @@ import { googleAuthApi } from '@/api/auth/googleAuthApi';
 import { Link } from 'expo-router';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleTextChange = (e: any, type: 'username' | 'password') => {
+  const handleTextChange = (e: any, type: 'email' | 'password') => {
     const setters: Record<typeof type, React.Dispatch<React.SetStateAction<string>>> = {
-      username: setUsername,
+      email: setEmail,
       password: setPassword,
     }
     setters[type](e)
   }
 
-  console.log({ username, password })
-
   const handleSubmit = async () => {
-    const response = await authenticateApi(username, password);
+    const response = await authenticateApi(email, password);
     console.log(response);
   }
 
@@ -42,8 +40,8 @@ export default function Login() {
         <View style={styles.textInputContainer}>
           <TextInput 
             style={styles.textInput} 
-            placeholder="Username/Email"
-            onChangeText={(e) => {handleTextChange(e, 'username')}}
+            placeholder="Email"
+            onChangeText={(e) => {handleTextChange(e, 'email')}}
           />
           <TextInput
             style={styles.textInput}

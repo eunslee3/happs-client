@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerApi } from '@/api/auth/registerApi';
 import { useRouter } from 'expo-router';
 import {
   CodeField,
@@ -10,6 +9,10 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { sendOtpApi } from '@/api/auth/sendOtpApi';
+import { verifyOtpApi } from '@/api/auth/verifyOtpApi';
+import { useLocalSearchParams } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 export default function ConfirmToken() {
   const [value, setValue] = useState('');
@@ -20,10 +23,57 @@ export default function ConfirmToken() {
     setValue,
   });
   const router = useRouter();
+  const { id, email } = useLocalSearchParams();
+
+  const sendOtp = async () => {
+    try {
+      const response = await sendOtpApi(id, email);
+      console.log(response)
+      if (response.status === 200) {
+        console.log('OTP sent successfully');
+
+      } else {
+        Toast.show({
+          text1: 'Failed to send OTP',
+          text2: 'Please try again later',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+    }
+  }
 
   const handleSubmit = async () => {
-
+    try {
+      const response = await verifyOtpApi(id, value);
+      if (response.data.status === 201) {
+        router.push({
+          pathname: '/auth/UserInfo',
+          params: {
+            id: response.data.data.createdUser.id
+          }
+        })
+      } 
+      else if (response.data.status === 400) {
+        Toast.show({
+          text1: 'Incorrect Passcode',
+          text2: 'Please enter a valid code',
+          type: 'error',
+        })
+      }
+    } catch (err) {
+      Toast.show({
+        text1: 'Something went wrong',
+        text2: `${err}`,
+        type: 'error',
+      })
+    }
   }
+
+  useEffect(() => {
+    sendOtp();
+  }, []);
 
   
   return (
