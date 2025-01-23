@@ -5,6 +5,7 @@ import { authenticateApi } from '@/api/auth/authenticateApi';
 import { googleAuthApi } from '@/api/auth/googleAuthApi';
 import { Link, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import * as SecureStore from 'expo-secure-store'
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -22,7 +23,10 @@ export default function Login() {
   const handleSubmit = async () => {
     const response: any = await authenticateApi(email, password);
     if (response.data.status === 200) {
-      router.push('/(tabs)')
+      console.log(response.data.data)
+      await SecureStore.setItemAsync('accessToken', response.data.data.accessToken);
+      await SecureStore.setItemAsync('refreshToken', response.data.data.refreshToken);
+      router.push('/(tabs)');
     } else {
       Toast.show({
         type: 'error',
