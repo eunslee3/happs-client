@@ -6,11 +6,13 @@ import { googleAuthApi } from '@/api/auth/googleAuthApi';
 import { Link, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import * as SecureStore from 'expo-secure-store'
+import userStore from '@/store/userStore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter()
+  const { setUser } = userStore();
 
   const handleTextChange = (e: any, type: 'email' | 'password') => {
     const setters: Record<typeof type, React.Dispatch<React.SetStateAction<string>>> = {
@@ -24,9 +26,18 @@ export default function Login() {
     const response: any = await authenticateApi(email, password);
     if (response.data.status === 200) {
       console.log(response.data.data)
-      await SecureStore.setItemAsync('accessToken', response.data.data.accessToken);
-      await SecureStore.setItemAsync('refreshToken', response.data.data.refreshToken);
-      router.push('/(tabs)');
+      const {
+        accessToken,
+        refreshToken,
+        googleId,
+        authProvider,
+        authProviderId,
+        ...user
+      } = response.data.data;
+      await SecureStore.setItemAsync('accessToken', accessToken);
+      await SecureStore.setItemAsync('refreshToken', refreshToken);
+      setUser(user)
+      router.push('/(tabs)/home');
     } else {
       Toast.show({
         type: 'error',

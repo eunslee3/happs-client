@@ -8,9 +8,17 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { NavigationContainer } from "@react-navigation/native";
 import { Stack, useRouter } from "expo-router";
 import Toast from 'react-native-toast-message';
+import userStore from '@/store/userStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+export const unstable_settings = {
+  // Ensure any route can link back to `/`
+  initialRouteName: 'index',
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -20,27 +28,26 @@ export default function RootLayout() {
     PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf')
   });
   const router = useRouter();
+  const { user } = userStore();
 
-  // useEffect(() => {
-  //   router.replace('/auth/Login')
-  // }, [])
+  console.log('this is user: ', user)
 
   useEffect(() => {
-    if (loaded) {
-      router.replace('/auth/Login')
+    if (loaded && !(user?.id)) {
+      router.navigate('/auth/Login')
       SplashScreen.hideAsync();
+    } else if (loaded && user.id) {
+      console.log('hit here')
+      SplashScreen.hideAsync();
+      router.navigate('/(tabs)/home')
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
-  // const Stack = createStackNavigator();
-
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName='auth/Login'>
+        <Stack screenOptions={{
+          headerShown: false
+        }}>
           <Stack.Screen
             name="auth/Login"
             options={{ headerShown: false }}
