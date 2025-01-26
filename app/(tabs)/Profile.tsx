@@ -93,6 +93,9 @@ export default function Profile() {
             </Pressable>
           </View>
         </View>
+        <View style={styles.contentPreviewContainer}>
+          <Text>No Content</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -193,5 +196,15 @@ const styles = StyleSheet.create({
   inactiveTab: {
     fontWeight: 'light',
     fontSize: 16,
+  },
+  contentPreviewContainer: {
+    width: '100%',
+    height: 140,
+    // borderWidth: 1,
+    // marginLeft: 10,
+    marginTop: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
