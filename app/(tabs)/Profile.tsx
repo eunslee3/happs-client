@@ -1,12 +1,28 @@
 import { StyleSheet, Image, View, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
-
+import React, { useState } from 'react';
 import userStore from '@/store/userStore';
 
 export default function Profile() {
+  const [activeTab, setActiveTab] = useState('All');
   const { user } = userStore();
-  console.log(user)
+
+  const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
+    switch (tab){
+      case 'All':
+        setActiveTab('All');
+        break;
+      case 'Clips':
+        setActiveTab('Clips');
+        break;
+      case 'Posts':
+        setActiveTab('Posts');
+        break;
+      default:
+        setActiveTab('All');
+    }
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -41,6 +57,42 @@ export default function Profile() {
             <Text style={{ fontSize: 14, color: '#9A9EA2'}}>{'@' + user.username}</Text>
           </View>
         </View>
+        <View style={styles.followingContainer}>
+          <View style={styles.followingBlock}>
+            <Text style={{ fontSize: 14, color: '#9A9EA2' }}>Followers</Text>
+            <Text style={{ fontSize: 24 }}>{user.followers}</Text>
+          </View>
+          <View style={styles.followingBlock}>
+            <Text style={{ fontSize: 14, color: '#9A9EA2' }}>Following</Text>
+            <Text style={{ fontSize: 24 }}>{user.following}</Text>
+          </View>
+        </View>
+        <View style={styles.tabBarContainer}>
+          <View style={styles.tabBar}>
+            <Pressable 
+              style={styles.tab}
+              onPress={() => handleToggleActiveTab('All')}
+            >
+              <Text style={activeTab === 'All' ? styles.activeTab : styles.inactiveTab}>All</Text>
+            </Pressable>
+            <Pressable 
+              style={styles.tab}
+              onPress={() => handleToggleActiveTab('Clips')}
+            >
+              <Text style={activeTab === 'Clips' ? styles.activeTab : styles.inactiveTab}>Clips</Text>
+            </Pressable>
+            <Pressable 
+              style={styles.tab}
+              onPress={() => handleToggleActiveTab('Posts')}
+            >
+              <Text style={activeTab === 'Posts' ? styles.activeTab : styles.inactiveTab}>Posts</Text>
+            </Pressable>
+            {/* Add press event to change the bottom half of profile to show all posts, clips, etc */}
+            <Pressable style={{ position: 'absolute', right: 10}}>
+              <AntDesign name="right" size={18} color="black" />
+            </Pressable>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -53,12 +105,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   headerContainer: {
-    height: 100,
+    height: 70,
     width: '100%',
     flexDirection: "column"
   },
   headerRow: {
-    height: '50%',
+    height: '100%',
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -75,7 +127,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%',
     height: 'auto',
-    borderWidth: 1,
     padding: 10
   },
   pfpAndNameContainer: {
@@ -101,5 +152,46 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'flex-start',
+  },
+  followingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 25,
+    justifyContent: 'space-evenly'
+  },
+  followingBlock: {
+    width: 169,
+    height: 83,
+    backgroundColor: '#F4F6F7',
+    flexDirection: 'column',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  tabBarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 20,
+    paddingLeft: 10
+  },
+  tabBar: {
+    height: '100%',
+    width: '100%',
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+  tab: {
+    paddingLeft: 10,
+    marginRight: 20,
+  },
+  activeTab: {
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    fontSize: 16,
+  },
+  inactiveTab: {
+    fontWeight: 'light',
+    fontSize: 16,
   }
 });
