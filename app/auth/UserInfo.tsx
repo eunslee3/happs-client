@@ -55,7 +55,7 @@ export default function Signup() {
         return;
       } else {
         router.push({
-          pathname: '/(tabs)/home',
+          pathname: '/(tabs)/Home',
         });
       }
     } catch (err) {

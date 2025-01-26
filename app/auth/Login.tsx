@@ -37,7 +37,7 @@ export default function Login() {
       await SecureStore.setItemAsync('accessToken', accessToken);
       await SecureStore.setItemAsync('refreshToken', refreshToken);
       setUser(user)
-      router.push('/(tabs)/home');
+      router.push('/(tabs)/Home');
     } else {
       Toast.show({
         type: 'error',
