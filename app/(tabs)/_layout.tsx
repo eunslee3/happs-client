@@ -34,7 +34,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ExpoCamera"
+        name="CreatePost"
         options={{
           tabBarIcon: ({ color }) => (
             <Image 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { registerApi } from '@/api/auth/registerApi';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Toast from 'react-native-toast-message'
 import * as yup from 'yup'

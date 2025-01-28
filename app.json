@@ -26,6 +26,21 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow happs to access your galley.",
+          "savePhotosPermission": "Allow happs to save galley.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
       ["expo-camera",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
