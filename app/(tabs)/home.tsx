@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
   const handleGetAllPosts = () => {
     const response = getAllPosts();
-    console.log('wtf ru', response)
+    // console.log('wtf ru', response)
   }
 
   useEffect(() => {
