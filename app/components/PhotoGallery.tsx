@@ -4,13 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
+
+import PreviewAsset from './PreviewAsset';
 
 export default function PhotoGallery() {
   const [assets, setAssets] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null); // Store after token
+  const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const router = useRouter();
 
   const fetchMoreAssets = async () => {
     if (after) {
@@ -36,9 +41,9 @@ export default function PhotoGallery() {
         mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video], // Fetch both photos and videos
         first: 100  // You can adjust this value to get more or fewer assets
       });
-      console.log('fetchedAssets: ', fetchedAssets)
       setAfter(fetchedAssets.endCursor);
       setAssets(fetchedAssets.assets);
+      await setSelectedAsset(fetchedAssets.assets[0]);
     }
     
     getAssets();
@@ -48,12 +53,20 @@ export default function PhotoGallery() {
     <View style={[styles.container, { width: screenWidth }]}>
       <View style={[{ height: screenHeight * .7 }, styles.previewContainer]}>
         <View style={styles.previewHeaderContainer}>
-          <AntDesign style={styles.left} name="close" size={24} color="white" />
+          <Pressable style={styles.left} onPress={() => router.back()}>
+            <AntDesign name="close" size={24} color="white" />
+          </Pressable>
           <Text style={[styles.center, { color: 'white', fontSize: 18 }]}>New Post</Text>
           <Pressable style={styles.right}>
             <Text style={{ color: '#00DCB7', fontSize: 18, textAlign: 'right', paddingRight: 10 }}>Continue</Text>
           </Pressable>
         </View>
+        {selectedAsset?.uri ? 
+          <PreviewAsset selectedAsset={selectedAsset} />
+          :
+          null
+        }
+
       </View>
       {assets.length > 0 ? (
         <FlatList
