@@ -29,11 +29,10 @@ export default function PhotoGallery() {
     if (player) {
       player.pause();
     }
-    console.log(selectedAsset)
     router.push({
       pathname: '../(tabs)/CreatePost',
       params: {
-        selectedAsset: selectedAsset
+        selectedAsset: JSON.stringify(selectedAsset)
       }
     })
   }
