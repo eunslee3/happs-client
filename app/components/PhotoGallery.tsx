@@ -1,21 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, ScrollView, Animated  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
-
+import GalleryItem from './GalleryItem';
 import PreviewAsset from './PreviewAsset';
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 export default function PhotoGallery() {
   const [assets, setAssets] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null); // Store after token
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
+  const [showPreview, setShowPreview] = useState<boolean>(true);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const router = useRouter();
+  const [scrollY] = useState(new Animated.Value(0));
+  const [currentHeight, setCurrentHeight] = useState<number>(0)
+  const heightBeforeScroll = screenHeight * 0.5;
+  const heightAfterScroll = 0;
+  const playerRef = useRef<any>(null); // To directly control the player
+
+  const handleNavigate = () => {
+    // Video continues to play after navigation. Have to manually pause it.
+    const player = playerRef.current;
+    if (player) {
+      player.pause();
+    }
+    console.log(selectedAsset)
+    router.push({
+      pathname: '../(tabs)/CreatePost',
+      params: {
+        selectedAsset: selectedAsset
+      }
+    })
+  }
 
   const fetchMoreAssets = async () => {
     if (after) {
@@ -30,6 +53,16 @@ export default function PhotoGallery() {
       setAfter(fetchedAssets.endCursor); // Update after for further pagination
     }
   };
+
+  const handleItemPress = (item: any) => {
+    setSelectedAsset(item);
+    setCurrentHeight(0);
+    setShowPreview(false);
+  }
+
+  useEffect(() => {
+    setShowPreview(true);
+  }, [showPreview])
 
   useEffect(() => {
     async function getAssets() {
@@ -49,35 +82,58 @@ export default function PhotoGallery() {
     getAssets();
   }, [permissionResponse]);
 
+  useEffect(() => {
+    const listener = scrollY.addListener(({ value }) => {
+      // Track the animated value as a regular number
+      setCurrentHeight(value);
+    });
+
+    return () => {
+      scrollY.removeListener(listener);
+    };
+  }, [scrollY]);
+
   return (
     <View style={[styles.container, { width: screenWidth }]}>
-      <View style={[{ height: screenHeight * .7 }, styles.previewContainer]}>
+      <View
+        style={styles.previewContainer}>
         <View style={styles.previewHeaderContainer}>
           <Pressable style={styles.left} onPress={() => router.back()}>
             <AntDesign name="close" size={24} color="white" />
           </Pressable>
           <Text style={[styles.center, { color: 'white', fontSize: 18 }]}>New Post</Text>
-          <Pressable style={styles.right}>
-            <Text style={{ color: '#00DCB7', fontSize: 18, textAlign: 'right', paddingRight: 10 }}>Continue</Text>
+          <Pressable style={styles.right} onPress={handleNavigate}>
+            <Text style={{ color: '#00DCB7', fontSize: 18, textAlign: 'right', paddingRight: 10 }}>Add</Text>
           </Pressable>
         </View>
-        {selectedAsset?.uri ? 
-          <PreviewAsset selectedAsset={selectedAsset} />
-          :
-          null
-        }
-
+        <Animated.View 
+          style={[styles.assetPreviewContainer, {
+            height: (currentHeight < 1 ? heightBeforeScroll : heightAfterScroll), // Dynamically change the height as user scrolls
+          }]}>
+          {selectedAsset && showPreview && currentHeight < 1? 
+            <PreviewAsset
+              selectedAsset={selectedAsset}
+              playerRef={playerRef}
+            /> 
+            : 
+            null
+          }
+        </Animated.View>
       </View>
       {assets.length > 0 ? (
-        <FlatList
+        <AnimatedFlatList
           data={assets}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           numColumns={4} // 3 items per row
-          renderItem={({ item }) => (
-            <Image source={item.uri} style={styles.image} />
+          renderItem={({ item }: { item: any }) => (
+            <GalleryItem uri={item.uri} item={item} callBack={handleItemPress}/>
           )}
           onEndReached={fetchMoreAssets}  // Fetch more assets when reaching the end
           onEndReachedThreshold={0.1}  // Trigger fetch when user is near the bottom
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
         />
       ) : (
         <Text>No assets available</Text>
@@ -127,4 +183,8 @@ const styles = StyleSheet.create({
     height: 100,
     borderWidth: 1
   },
+  assetPreviewContainer: {
+    // flex: 1,
+    width: '100%',
+  }
 });
