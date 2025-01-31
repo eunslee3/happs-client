@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, ScrollView, Animated  } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
+import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, Animated  } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';

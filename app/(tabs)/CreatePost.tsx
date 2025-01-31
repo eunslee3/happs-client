@@ -1,4 +1,4 @@
-import { View, Image, StyleSheet, ScrollView, Text, Pressable } from 'react-native';
+import { View, Image, StyleSheet, ScrollView, Text, Pressable, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
@@ -30,13 +30,26 @@ export default function HomeScreen() {
         <Text style={styles.header}>Create Post</Text>
         <View style={styles.emptySpace} />
       </View>
-      <ScrollView style={styles.assetsContainer} horizontal={true}>
+      <FlatList
+      style={styles.assetsContainer}
+      horizontal={true}
+      data={assets}  // An array of your assets or items to render
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => (
         <Pressable style={styles.addAsset} onPress={() => router.push('../components/PhotoGallery')}>
           <Image source={require('../../assets/images/create-post-camera.png')} />
           <Text style={{ fontSize: 14, marginVertical: 5 }}>Add More</Text>
           <Text style={{ color: '#7E8184' }}>{`${assets.length}/10`}</Text>
         </Pressable>
-      </ScrollView>
+      )}
+      ListEmptyComponent={(
+        <Pressable style={styles.addAsset} onPress={() => router.push('../components/PhotoGallery')}>
+          <Image source={require('../../assets/images/create-post-camera.png')} />
+          <Text style={{ fontSize: 14, marginVertical: 5 }}>Add More</Text>
+          <Text style={{ color: '#7E8184' }}>{`0/10`}</Text>
+        </Pressable>
+      )}
+    />
     </SafeAreaView>
   );
 }
@@ -69,11 +82,13 @@ const styles = StyleSheet.create({
   assetsContainer: {
     maxHeight: 200,
     width: '100%',
-    marginTop: 10
+    marginTop: 10,
+    borderWidth: 1,
   },
   addAsset: {
     height: 200,
     minWidth: 150,
+    width: 'auto',
     borderWidth: 2,
     borderStyle: 'dotted',
     borderRadius: 25,
