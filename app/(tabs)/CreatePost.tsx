@@ -26,6 +26,11 @@ export default function CreatePost() {
     }
   }, [selectedAsset])
 
+  const handleBackButton = () => {
+    router.back();
+    assetsStore.getState().clearAssets()
+  }
+
   const handleRemoveSelectedAsset = (selectedAsset: any) => {
     assetsStore.getState().setAssets(assets.filter((asset: any) => asset.id!== selectedAsset.id));
   };
@@ -95,7 +100,7 @@ export default function CreatePost() {
         style={styles.scrollView}
       >
         <View style={styles.headerContainer}>
-          <Pressable style={styles.backIcon} onPress={() => {router.back()}}>
+          <Pressable style={styles.backIcon} onPress={() => {handleBackButton()}}>
             <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="black" />
           </Pressable>
           <Text style={styles.header}>Create Post</Text>
