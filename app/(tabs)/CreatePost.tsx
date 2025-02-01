@@ -90,6 +90,10 @@ export default function CreatePost() {
     }
   };
 
+  const handleSubmit = async () => {
+    
+  }
+
 
   return (
   <SafeAreaView style={styles.container}>
@@ -171,10 +175,10 @@ export default function CreatePost() {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Pressable style={[styles.button, { backgroundColor: '#F6F7F7' }]}>
+          <Pressable onPress={() => handleBackButton()} style={[styles.button, { backgroundColor: '#F6F7F7' }]}>
             <Text style={{ fontSize: 16, color: 'red' }}>Cancel</Text>
           </Pressable>
-          <Pressable style={[styles.button, { backgroundColor: '#00DCB7' }]}>
+          <Pressable onPress={() => handleSubmit()} style={[styles.button, { backgroundColor: '#00DCB7' }]}>
             <Text style={{ fontSize: 16, color: 'white' }}>Post</Text>
           </Pressable>
         </View>
