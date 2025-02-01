@@ -123,7 +123,7 @@ export default function PhotoGallery() {
           keyExtractor={(item: any) => item.id}
           numColumns={4} // 3 items per row
           renderItem={({ item }: { item: any }) => (
-            <GalleryItem uri={item.uri} item={item} callBack={handleItemPress}/>
+            <GalleryItem uri={item.uri} mediaType={item.mediaType} item={item} callBack={handleItemPress}/>
           )}
           onEndReached={fetchMoreAssets}  // Fetch more assets when reaching the end
           onEndReachedThreshold={0.1}  // Trigger fetch when user is near the bottom

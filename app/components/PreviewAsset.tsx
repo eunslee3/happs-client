@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 
 interface PreviewAssetProps {
@@ -16,6 +15,7 @@ export default function PreviewAsset(props: PreviewAssetProps) {
   const [playerKey, setPlayerKey] = useState<number>(0); // Player key to force re-render
 
 
+  // On first render - this is always failing!!!!!!!!!!!!!!!!!!!!!!!!
   // Function to copy the asset to a temporary file location
   const copyAssetToTempFile = async (uri: string) => {
     try {
@@ -63,7 +63,7 @@ export default function PreviewAsset(props: PreviewAssetProps) {
   const player = useVideoPlayer(videoSource, (player) => {
     if (player) {
       player.loop = true;
-      player.play();
+      player.pause();
       playerRef.current = player; // Save the player instance in the ref
     }
   });
