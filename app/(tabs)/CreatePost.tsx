@@ -8,6 +8,7 @@ import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as FileSystem from 'expo-file-system';
 import { Buffer } from 'buffer';
+import * as MediaLibrary from 'expo-media-library';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -23,14 +24,20 @@ export default function CreatePost() {
 
   const getFileBuffer = async (uri: string) => {
     try {
+      
+      
+      const asset = await MediaLibrary.getAssetInfoAsync(uri);
+      console.log('asset: ', asset)
+      const localUri = asset.uri;
+
       // Step 1: Read the file as a base64 string
-      const fileContent = await FileSystem.readAsStringAsync(uri, {
+      const fileContent = await FileSystem.readAsStringAsync(localUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
   
       // Step 2: Convert the base64 string to a Buffer
       const buffer = Buffer.from(fileContent, 'base64');
-  
+
       return buffer;
     } catch (error) {
       console.error('Error reading file:', error);
@@ -109,11 +116,15 @@ export default function CreatePost() {
     }
   };
 
-  const handleSubmit = async () => {
-    
-  }
+  const handleSubmit = () => {
+    try {
+      const buffers = assets.map((asset: any) => getFileBuffer(asset.uri));
 
-  console.log('this is assets: ', assets)
+      console.log('this is buffers: ', buffers);
+    } catch (err) {
+      console.error('Error submitting post', err);
+    }
+  }
 
 
   return (
