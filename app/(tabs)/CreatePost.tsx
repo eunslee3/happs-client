@@ -1,4 +1,4 @@
-import { Button, Switch, View, StyleSheet, ScrollView, Image as RNImage, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Switch, View, StyleSheet, ScrollView, Image as RNImage, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
 import { Image as ExpoImage } from 'expo-image';
@@ -6,6 +6,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import * as FileSystem from 'expo-file-system';
+import { Buffer } from 'buffer';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -18,6 +20,23 @@ export default function CreatePost() {
     allowComments: true,
     participateInLeaderboard: true
   });
+
+  const getFileBuffer = async (uri: string) => {
+    try {
+      // Step 1: Read the file as a base64 string
+      const fileContent = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+  
+      // Step 2: Convert the base64 string to a Buffer
+      const buffer = Buffer.from(fileContent, 'base64');
+  
+      return buffer;
+    } catch (error) {
+      console.error('Error reading file:', error);
+      throw new Error('Failed to convert file to buffer');
+    }
+  }
 
   useEffect(() => {
     if (selectedAsset && assets.length < 10) {
@@ -41,9 +60,9 @@ export default function CreatePost() {
   };
 
   const handleRenderAssets = () => {
-    return assets.map((asset: any) => {
+    return assets.map((asset: any, idx: number) => {
       return (
-        <View style={styles.assetContainer}>
+        <View key={idx} style={styles.assetContainer}>
           <Pressable style={styles.assetDetail} onPress={() => handleRemoveSelectedAsset(asset)}>
             <FontAwesome name="trash" size={24} color="red" />
           </Pressable>
@@ -93,6 +112,8 @@ export default function CreatePost() {
   const handleSubmit = async () => {
     
   }
+
+  console.log('this is assets: ', assets)
 
 
   return (
