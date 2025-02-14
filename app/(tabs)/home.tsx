@@ -3,17 +3,63 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import uploadStore from '@/store/uploadStore';
+import * as FileSystem from 'expo-file-system';
+import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
+import { createPost } from '@/api/posts/createPost';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
+  const { submittedForm, fileObjs } = uploadStore();
+
+  const getPresignedUrl = async (fileName: string, fileType: string) => {
+    const response = await getPresignedUrlApi(fileName, fileType);
+    return response
+  }
+
+  const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
+    try {
+      const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
+        httpMethod: 'PUT',
+        headers: { 'Content-Type': fileObj.fileType },
+        sessionType: FileSystem.FileSystemSessionType.FOREGROUND
+      });
+      if (response.status !== 200) throw new Error('Upload failed');
+      return presignedUrl.split('?')[0];
+    } catch (err) {
+      console.error('Upload Error:', err);
+      throw err;
+    }
+  }
+
   const handleGetAllPosts = () => {
     const response = getAllPosts();
     // console.log('wtf ru', response)
   }
 
-  const handleUploadFiles = () => {
-    
+  const handleUploadFiles = async () => {
+      // This contains the presigned urls and also the file keys that are linked to that url
+      const presignedObjs = await Promise.all(fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType)))
+      // Upload assets using the presignedUrl - then clean the urls to always have access to that asset
+      
+      const cleanUrls = await Promise.allSettled(
+        presignedObjs.map((presignedObj: any, idx: number) => 
+          uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
+        )
+      );
+      const successfulUrls = cleanUrls
+        .filter((result) => result.status === 'fulfilled') // Keep only successful uploads
+        .map((result) => (result as PromiseFulfilledResult<string>).value);
+        
+      const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey)
+      await createPost(submittedForm, successfulUrls, fileKeys)
   }
+
+  useEffect(() => {
+    if (fileObjs.length > 0) {
+      handleUploadFiles();
+    }
+  }, [fileObjs, submittedForm]);
 
   useEffect(() => {
     handleGetAllPosts()

@@ -5,11 +5,6 @@ export const getPresignedUrlApi = async (
   fileType: string
 ) => {
   try {
-    console.log({
-      name: 'PRESIGNED_URL',
-      fileName,
-      fileType
-    })
     const response = await instance.post('/s3/get-presigned-url', {
       fileName,
       fileType,

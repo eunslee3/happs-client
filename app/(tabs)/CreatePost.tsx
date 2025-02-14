@@ -7,8 +7,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as MediaLibrary from 'expo-media-library';
-import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
-import * as FileSystem from 'expo-file-system';
+import uploadStore from '@/store/uploadStore';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -21,6 +20,8 @@ export default function CreatePost() {
     allowComments: true,
     participateInLeaderboard: true
   });
+  const { setSubmittedForm, setFileObjs } = uploadStore();
+
 
   async function convertPhUriToFile(uri: string, assetId?: string) {
     try {
@@ -126,47 +127,13 @@ export default function CreatePost() {
     }
   };
 
-  const getPresignedUrl = async (fileName: string, fileType: string) => {
-    const response = await getPresignedUrlApi(fileName, fileType);
-    return response
-  }
-
-  const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
-    console.log({
-      fileObj,
-      presignedUrl
-    })
-    try {
-      const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
-        httpMethod: 'PUT',
-        headers: { 'Content-Type': fileObj.fileType },
-        sessionType: FileSystem.FileSystemSessionType.FOREGROUND
-      });
-      console.log('response: ', response)
-
-      if (response.status !== 200) throw new Error('Upload failed');
-
-      console.log('Upload Success:', presignedUrl.split('?')[0]);
-      return presignedUrl.split('?')[0];
-    } catch (err) {
-      console.error('Upload Error:', err);
-      throw err;
-    }
-  }
-
   const handleSubmit = async () => {
     try {
       const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
-      // This contains the presigned urls and also the file keys that are linked to that url
-      const presignedObjs = await Promise.all(fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType)))
-      // Upload assets using the presignedUrl - then clean the urls to always have access to that asset
       
-      const cleanUrls = await Promise.allSettled(
-        presignedObjs.map((presignedObj: any, idx: number) => 
-          uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
-        )
-      );
-      console.log('Cleaned urls:', cleanUrls)
+      setSubmittedForm(form)
+      setFileObjs(fileObjs)
+      router.navigate('/Home')
     } catch (err) {
       console.error('Error submitting post', err);
     }
