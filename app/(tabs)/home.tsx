@@ -11,6 +11,10 @@ export default function HomeScreen() {
     // console.log('wtf ru', response)
   }
 
+  const handleUploadFiles = () => {
+    
+  }
+
   useEffect(() => {
     handleGetAllPosts()
   }, [])

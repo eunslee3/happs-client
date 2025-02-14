@@ -8,7 +8,6 @@ import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as MediaLibrary from 'expo-media-library';
 import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
-import { saveS3Asset } from '@/api/posts/saveS3Asset';
 import * as FileSystem from 'expo-file-system';
 
 export default function CreatePost() {
@@ -138,7 +137,6 @@ export default function CreatePost() {
       presignedUrl
     })
     try {
-      // const contentType = getMimeType(fileUri);
       const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
         httpMethod: 'PUT',
         headers: { 'Content-Type': fileObj.fileType },
