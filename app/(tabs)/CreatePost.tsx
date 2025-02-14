@@ -6,12 +6,10 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import * as FileSystem from 'expo-file-system';
-import { Buffer } from 'buffer';
 import * as MediaLibrary from 'expo-media-library';
 import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
-import { initiateMultipartUpload } from '@/api/posts/initiateMultipartUpload';
-import fetchBlob from 'react-native-blob-util';
+import { saveS3Asset } from '@/api/posts/saveS3Asset';
+import * as FileSystem from 'expo-file-system';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -131,6 +129,7 @@ export default function CreatePost() {
 
   const getPresignedUrl = async (fileName: string, fileType: string) => {
     const response = await getPresignedUrlApi(fileName, fileType);
+    return response
   }
 
   const getMimeType = (fileUri: string) => {
@@ -150,24 +149,43 @@ export default function CreatePost() {
     return mimeTypes[extension!] || 'application/octet-stream'; // Default MIME type
   };
 
-  const uploadToS3 = async (fileUri: string, presignedUrl: string) => {
+  const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
+    console.log({
+      fileObj,
+      presignedUrl
+    })
     try {
-      const extension = getMimeType(fileUri);
-      const response = await fetch(presignedUrl, {
-        method: 'PUT',
-        body: fetchBlob.wrap(fileUri),
-        headers: 
+      // const contentType = getMimeType(fileUri);
+      const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
+        httpMethod: 'PUT',
+        headers: { 'Content-Type': fileObj.fileType },
+        sessionType: FileSystem.FileSystemSessionType.FOREGROUND
       });
-    } catch (err) {
+      console.log('response: ', response)
 
+      if (response.status !== 200) throw new Error('Upload failed');
+
+      console.log('Upload Success:', presignedUrl.split('?')[0]);
+      return presignedUrl.split('?')[0];
+    } catch (err) {
+      console.error('Upload Error:', err);
+      throw err;
     }
   }
 
   const handleSubmit = async () => {
     try {
       const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
-      console.log(fileObjs)
-      // const presignedUrls = await Promise.all(fileObjs.map((file) => getPresignedUrl(file.fileName, file.fileType)))
+      // This contains the presigned urls and also the file keys that are linked to that url
+      const presignedObjs = await Promise.all(fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType)))
+      // Upload assets using the presignedUrl - then clean the urls to always have access to that asset
+      
+      const cleanUrls = await Promise.allSettled(
+        presignedObjs.map((presignedObj: any, idx: number) => 
+          uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
+        )
+      );
+      console.log('Cleaned urls:', cleanUrls)
     } catch (err) {
       console.error('Error submitting post', err);
     }

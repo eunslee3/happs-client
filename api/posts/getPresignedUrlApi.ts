@@ -14,8 +14,10 @@ export const getPresignedUrlApi = async (
       fileName,
       fileType,
     });
-    console.log('got presigned url: ', response);
-    // return response;
+    return {
+      presignedUrl: response.data.presignedUrl,
+      fileKey: response.data.fileKey
+    }
   } catch (err: any) {
     console.log(err.message);
     return err;

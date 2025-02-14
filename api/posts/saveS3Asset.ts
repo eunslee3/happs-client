@@ -1,14 +1,14 @@
 import { instance } from '../axiosInstance';
 
-export const initiateMultipartUpload = async (
-  bucket: string,
-  key: string
+export const saveS3Asset = async (
+  form: any,
+  s3CleanUrl: string
 ) => {
   try {
     console.log({
-      name: 'multipartUpload',
-      bucket,
-      key
+      name: 'saveS3Asset',
+      form,
+      s3CleanUrl
     })
     // const response = await instance.get('/posts');
     // // console.log('got posts: ', response)
