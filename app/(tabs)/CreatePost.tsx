@@ -132,23 +132,6 @@ export default function CreatePost() {
     return response
   }
 
-  const getMimeType = (fileUri: string) => {
-    const extension = fileUri.split('.').pop()?.toLowerCase();
-  
-    const mimeTypes: { [key: string]: string } = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      gif: 'image/gif',
-      mp4: 'video/mp4',
-      mov: 'video/quicktime',
-      avi: 'video/x-msvideo',
-      webm: 'video/webm',
-    };
-  
-    return mimeTypes[extension!] || 'application/octet-stream'; // Default MIME type
-  };
-
   const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
     console.log({
       fileObj,
