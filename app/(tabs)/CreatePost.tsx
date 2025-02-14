@@ -9,6 +9,9 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as FileSystem from 'expo-file-system';
 import { Buffer } from 'buffer';
 import * as MediaLibrary from 'expo-media-library';
+import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
+import { initiateMultipartUpload } from '@/api/posts/initiateMultipartUpload';
+import fetchBlob from 'react-native-blob-util';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -22,26 +25,36 @@ export default function CreatePost() {
     participateInLeaderboard: true
   });
 
-  const getFileBuffer = async (uri: string) => {
+  async function convertPhUriToFile(uri: string, assetId?: string) {
     try {
+      let fileObj: any = {};
       
-      
-      const asset = await MediaLibrary.getAssetInfoAsync(uri);
-      console.log('asset: ', asset)
-      const localUri = asset.uri;
+      // If the URI starts with 'ph://', try to resolve it
+      if (uri.startsWith('ph://')) {
+        // Request media library permission
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          throw new Error('Media library permissions not granted');
+        }
+        
+        // Use assetId if available; otherwise, use the URI directly.
+        const identifier = assetId || uri;
+        const assetInfo = await MediaLibrary.getAssetInfoAsync(identifier);
+        
+        if (!assetInfo || !assetInfo.localUri) {
+          throw new Error('Could not get localUri from asset info');
+        }
+        fileObj = {
+          localUri: assetInfo.localUri,
+          fileName: assetInfo.filename,
+          fileType: assetInfo.mediaType
+        }
+      }
 
-      // Step 1: Read the file as a base64 string
-      const fileContent = await FileSystem.readAsStringAsync(localUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-  
-      // Step 2: Convert the base64 string to a Buffer
-      const buffer = Buffer.from(fileContent, 'base64');
-
-      return buffer;
+      return fileObj;
     } catch (error) {
-      console.error('Error reading file:', error);
-      throw new Error('Failed to convert file to buffer');
+      console.error('Error in convertPhUriToFile:', error);
+      throw error;
     }
   }
 
@@ -116,11 +129,45 @@ export default function CreatePost() {
     }
   };
 
-  const handleSubmit = () => {
-    try {
-      const buffers = assets.map((asset: any) => getFileBuffer(asset.uri));
+  const getPresignedUrl = async (fileName: string, fileType: string) => {
+    const response = await getPresignedUrlApi(fileName, fileType);
+  }
 
-      console.log('this is buffers: ', buffers);
+  const getMimeType = (fileUri: string) => {
+    const extension = fileUri.split('.').pop()?.toLowerCase();
+  
+    const mimeTypes: { [key: string]: string } = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      mp4: 'video/mp4',
+      mov: 'video/quicktime',
+      avi: 'video/x-msvideo',
+      webm: 'video/webm',
+    };
+  
+    return mimeTypes[extension!] || 'application/octet-stream'; // Default MIME type
+  };
+
+  const uploadToS3 = async (fileUri: string, presignedUrl: string) => {
+    try {
+      const extension = getMimeType(fileUri);
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: fetchBlob.wrap(fileUri),
+        headers: 
+      });
+    } catch (err) {
+
+    }
+  }
+
+  const handleSubmit = async () => {
+    try {
+      const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
+      console.log(fileObjs)
+      // const presignedUrls = await Promise.all(fileObjs.map((file) => getPresignedUrl(file.fileName, file.fileType)))
     } catch (err) {
       console.error('Error submitting post', err);
     }
