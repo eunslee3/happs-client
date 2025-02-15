@@ -1,17 +1,14 @@
 import { instance } from '../axiosInstance';
 
-interface CreatePost {
-  submittedForm: any,
-  cleanUrls: string[];
-}
-
 export const createPost = async (
+  userId: string,
   submittedForm: any, 
   cleanUrls: string[], 
   fileKeys: string[]
 ) => {
   try {
-    const response = await instance.post('/posts', {
+    const response = await instance.post('/posts/create', {
+      userId,
       title: submittedForm.title,
       description: submittedForm.description,
       location: submittedForm.location,

@@ -4,7 +4,9 @@ interface UploadState {
   progress: number;
   fileObjs: any[];
   submittedForm: any;
+  isUploading: boolean;
   setSubmittedForm: (submittedForm: any) => void;
+  setIsUploading: (isUploading: boolean) => void;
   setProgress: (progress: number) => void;
   setFileObjs: (fileObjs: any[]) => void;
   clearProgress: () => void;
@@ -16,6 +18,9 @@ const uploadStore = create<UploadState>((set) => ({
   progress: 0,
   fileObjs: [],
   submittedForm: {},
+  isUploading: false,
+  setIsUploading: (isUploading: boolean) => set({ isUploading }),
+  clearFile: () => set({ fileObjs: [] }),
   setSubmittedForm: (submittedForm: any) => set({ submittedForm }),
   setProgress: (progress: number) => set({ progress }),
   setFileObjs: (fileObjs: any[]) => set({ fileObjs }),

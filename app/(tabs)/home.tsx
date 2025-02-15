@@ -1,16 +1,26 @@
 import { View, Image, StyleSheet, Platform, ScrollView, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import uploadStore from '@/store/uploadStore';
 import * as FileSystem from 'expo-file-system';
 import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
 import { createPost } from '@/api/posts/createPost';
+import userStore from '@/store/userStore';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
-  const { submittedForm, fileObjs } = uploadStore();
+  const { 
+    submittedForm, 
+    fileObjs, 
+    clearFileObjs, 
+    clearSubmittedForm, 
+    // isUploading, 
+    // setIsUploading 
+  } = uploadStore();
+  const { user } = userStore();
+  const isUploading = useRef(false);
 
   const getPresignedUrl = async (fileName: string, fileType: string) => {
     const response = await getPresignedUrlApi(fileName, fileType);
@@ -38,10 +48,15 @@ export default function HomeScreen() {
   }
 
   const handleUploadFiles = async () => {
+    if (isUploading.current) return; // Prevent duplicate uploads
+    isUploading.current = true;
+    try {
+      // setIsUploading(true);
+
       // This contains the presigned urls and also the file keys that are linked to that url
       const presignedObjs = await Promise.all(fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType)))
+
       // Upload assets using the presignedUrl - then clean the urls to always have access to that asset
-      
       const cleanUrls = await Promise.allSettled(
         presignedObjs.map((presignedObj: any, idx: number) => 
           uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
@@ -50,16 +65,26 @@ export default function HomeScreen() {
       const successfulUrls = cleanUrls
         .filter((result) => result.status === 'fulfilled') // Keep only successful uploads
         .map((result) => (result as PromiseFulfilledResult<string>).value);
-        
-      const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey)
-      await createPost(submittedForm, successfulUrls, fileKeys)
+
+      // Identifiers for the uploaded files - need to keep track of file keys in order to delete files  
+      const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey);
+      await createPost(user.id, submittedForm, successfulUrls, fileKeys);
+      clearFileObjs();
+      clearSubmittedForm();
+    } catch (err) {
+      console.error('Upload Error:', err);
+      throw err;
+    } finally {
+      // setIsUploading(false);
+      isUploading.current = false; // Reset after completion
+    }
   }
 
   useEffect(() => {
-    if (fileObjs.length > 0) {
-      handleUploadFiles();
+    if (fileObjs.length > 0 && !isUploading.current) {
+      handleUploadFiles(); // This is saving the content twice.
     }
-  }, [fileObjs, submittedForm]);
+  }, [fileObjs, isUploading]);
 
   useEffect(() => {
     handleGetAllPosts()
