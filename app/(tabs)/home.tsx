@@ -69,7 +69,7 @@ export default function HomeScreen() {
       // Identifiers for the uploaded files - need to keep track of file keys in order to delete files  
       const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey);
       await createPost(user.id, submittedForm, successfulUrls, fileKeys);
-      // clearFileObjs();
+      clearFileObjs();
       clearSubmittedForm();
     } catch (err) {
       console.error('Upload Error:', err);
@@ -86,7 +86,7 @@ export default function HomeScreen() {
     }
   }, [fileObjs, isUploading]);
 
-  console.log(fileObjs)
+  console.log('is uploading? ', fileObjs)
 
   useEffect(() => {
     handleGetAllPosts()
@@ -138,17 +138,21 @@ export default function HomeScreen() {
                 </Pressable>
               </View>
             </View>
-            {/* Progress bar - conditionally render this */}
-            <View style={styles.uploadProgress}>
-              <View style={styles.uploadProgressContainer}>
-                <View style={styles.uploadProgressItem}>
+          </View>
+          <View>
+            {/* Progress bar */}
+            { fileObjs.length > 0 && (
+            <View style={styles.uploadProgressContainer}>
+              <View style={styles.uploadProgressItem}>
+                <View style={styles.progressComponentContainer}>
                   <ActivityIndicator size='large' />
+                </View>
+                <View style={styles.progressComponentContainer}>
                   <Image style={styles.uploadProgressImage} source={{ uri: fileObjs[0]?.localUri}} />
                 </View>
               </View>
             </View>
-          </View>
-          <View>
+            )}
             {/* <Image source={{ uri: '../../assets/images/Apple.png'}} /> */}
             {/* Content here: */}
           </View>
@@ -205,13 +209,9 @@ const styles = StyleSheet.create({
     fontWeight: 'light',
     fontSize: 16,
   },
-  uploadProgress: {
-    height: 75,
-    width: '100%'
-  },
   uploadProgressContainer: {
     position: 'absolute',
-    top: 0,
+    top: 50,
     bottom: 0,
     left: 0,
     right: 0,
@@ -222,18 +222,27 @@ const styles = StyleSheet.create({
   uploadProgressItem: {
     display: 'flex',
     flexDirection: 'row',
-    height: '100%',
+    // height: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: 150,
+    height: 75,
     borderWidth: 1,
     borderRadius: 10
   },
   uploadProgressImage: {
     width: 75,
     height: 73,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderRadius: 10,
     margin: 0
+  },
+  progressComponentContainer: {
+    height: 75,
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
