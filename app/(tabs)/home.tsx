@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system';
 import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
 import { createPost } from '@/api/posts/createPost';
 import userStore from '@/store/userStore';
+import Toast from 'react-native-toast-message';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
@@ -71,6 +72,10 @@ export default function HomeScreen() {
       await createPost(user.id, submittedForm, successfulUrls, fileKeys);
       clearFileObjs();
       clearSubmittedForm();
+      Toast.show({
+        text1: 'Post created successfully!',
+        type: 'success',
+      })
     } catch (err) {
       console.error('Upload Error:', err);
       throw err;
@@ -148,7 +153,7 @@ export default function HomeScreen() {
                   <ActivityIndicator size='large' />
                 </View>
                 <View style={styles.progressComponentContainer}>
-                  <Image style={styles.uploadProgressImage} source={{ uri: fileObjs[0]?.localUri}} />
+                  <Text>Posting...</Text>
                 </View>
               </View>
             </View>
