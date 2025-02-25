@@ -1,4 +1,4 @@
-import { View, Image, StyleSheet, Platform, ScrollView, Text, Pressable } from 'react-native';
+import { ActivityIndicator, View, Image, StyleSheet, Platform, ScrollView, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect, useRef } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
@@ -69,7 +69,7 @@ export default function HomeScreen() {
       // Identifiers for the uploaded files - need to keep track of file keys in order to delete files  
       const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey);
       await createPost(user.id, submittedForm, successfulUrls, fileKeys);
-      clearFileObjs();
+      // clearFileObjs();
       clearSubmittedForm();
     } catch (err) {
       console.error('Upload Error:', err);
@@ -85,6 +85,8 @@ export default function HomeScreen() {
       handleUploadFiles(); // This is saving the content twice.
     }
   }, [fileObjs, isUploading]);
+
+  console.log(fileObjs)
 
   useEffect(() => {
     handleGetAllPosts()
@@ -136,9 +138,18 @@ export default function HomeScreen() {
                 </Pressable>
               </View>
             </View>
+            {/* Progress bar - conditionally render this */}
+            <View style={styles.uploadProgress}>
+              <View style={styles.uploadProgressContainer}>
+                <View style={styles.uploadProgressItem}>
+                  <ActivityIndicator size='large' />
+                  <Image style={styles.uploadProgressImage} source={{ uri: fileObjs[0]?.localUri}} />
+                </View>
+              </View>
+            </View>
           </View>
           <View>
-            <Image source={{ uri: '../../assets/images/Apple.png'}} />
+            {/* <Image source={{ uri: '../../assets/images/Apple.png'}} /> */}
             {/* Content here: */}
           </View>
       </ScrollView>
@@ -193,5 +204,36 @@ const styles = StyleSheet.create({
   inactiveTab: {
     fontWeight: 'light',
     fontSize: 16,
+  },
+  uploadProgress: {
+    height: 75,
+    width: '100%'
+  },
+  uploadProgressContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  uploadProgressItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 150,
+    borderWidth: 1,
+    borderRadius: 10
+  },
+  uploadProgressImage: {
+    width: 75,
+    height: 73,
+    resizeMode: 'contain',
+    borderRadius: 10,
+    margin: 0
   }
 });
