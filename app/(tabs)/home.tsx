@@ -9,19 +9,20 @@ import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
 import { createPost } from '@/api/posts/createPost';
 import userStore from '@/store/userStore';
 import Toast from 'react-native-toast-message';
+import { useMutation } from '@tanstack/react-query';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
+  // const [isUploading, setIsUploading] = useState(false)
+  let isUploading = false;
   const { 
     submittedForm, 
     fileObjs, 
     clearFileObjs, 
-    clearSubmittedForm, 
-    // isUploading, 
-    // setIsUploading 
+    clearSubmittedForm,
   } = uploadStore();
   const { user } = userStore();
-  const isUploading = useRef(false);
+  // const isUploading = useRef(false);
 
   const getPresignedUrl = async (fileName: string, fileType: string) => {
     const response = await getPresignedUrlApi(fileName, fileType);
@@ -48,50 +49,46 @@ export default function HomeScreen() {
     // console.log('wtf ru', response)
   }
 
-  const handleUploadFiles = async () => {
-    if (isUploading.current) return; // Prevent duplicate uploads
-    isUploading.current = true;
-    try {
-      // setIsUploading(true);
-
-      // This contains the presigned urls and also the file keys that are linked to that url
-      const presignedObjs = await Promise.all(fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType)))
-
-      // Upload assets using the presignedUrl - then clean the urls to always have access to that asset
+  const uploadFilesMutation = useMutation({
+    mutationFn: async () => {
+      const presignedObjs = await Promise.all(
+        fileObjs.map((file) => getPresignedUrl(file.fileName, file.fileType))
+      );
+  
       const cleanUrls = await Promise.allSettled(
-        presignedObjs.map((presignedObj: any, idx: number) => 
+        presignedObjs.map((presignedObj, idx) =>
           uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
         )
       );
+  
       const successfulUrls = cleanUrls
-        .filter((result) => result.status === 'fulfilled') // Keep only successful uploads
+        .filter((result) => result.status === 'fulfilled')
         .map((result) => (result as PromiseFulfilledResult<string>).value);
-
-      // Identifiers for the uploaded files - need to keep track of file keys in order to delete files  
-      const fileKeys = presignedObjs.map((presignedObj: any) => presignedObj.fileKey);
+  
+      const fileKeys = presignedObjs.map((presignedObj) => presignedObj.fileKey);
+  
+      return { successfulUrls, fileKeys };
+    },
+    onSuccess: async ({ successfulUrls, fileKeys }) => {
       await createPost(user.id, submittedForm, successfulUrls, fileKeys);
       clearFileObjs();
       clearSubmittedForm();
       Toast.show({
         text1: 'Post created successfully!',
         type: 'success',
-      })
-    } catch (err) {
+      });
+    },
+    onError: (err) => {
       console.error('Upload Error:', err);
-      throw err;
-    } finally {
-      // setIsUploading(false);
-      isUploading.current = false; // Reset after completion
-    }
-  }
+    },
+  });
+  
 
   useEffect(() => {
-    if (fileObjs.length > 0 && !isUploading.current) {
-      handleUploadFiles(); // This is saving the content twice.
+    if (fileObjs.length > 0 && !isUploading) {
+      uploadFilesMutation.mutate()
     }
   }, [fileObjs, isUploading]);
-
-  console.log('is uploading? ', fileObjs)
 
   useEffect(() => {
     handleGetAllPosts()

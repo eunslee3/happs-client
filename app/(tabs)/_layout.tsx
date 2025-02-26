@@ -4,10 +4,12 @@ import { Image, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function TabLayout() {
-
+  const queryClient = new QueryClient();
   return (
+    <QueryClientProvider client={queryClient}>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#00DCB7',
@@ -59,6 +61,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </QueryClientProvider>
   );
 }
 
