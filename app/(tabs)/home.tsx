@@ -10,11 +10,12 @@ import { createPost } from '@/api/posts/createPost';
 import userStore from '@/store/userStore';
 import Toast from 'react-native-toast-message';
 import { useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import PostCard from '../components/feed/PostCard';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
-  // const [isUploading, setIsUploading] = useState(false)
-  let isUploading = false;
+  const [allPosts, setAllPosts] = useState<any>([]);
   const { 
     submittedForm, 
     fileObjs, 
@@ -22,7 +23,6 @@ export default function HomeScreen() {
     clearSubmittedForm,
   } = uploadStore();
   const { user } = userStore();
-  // const isUploading = useRef(false);
 
   const getPresignedUrl = async (fileName: string, fileType: string) => {
     const response = await getPresignedUrlApi(fileName, fileType);
@@ -44,10 +44,10 @@ export default function HomeScreen() {
     }
   }
 
-  const handleGetAllPosts = () => {
-    const response = getAllPosts();
-    // console.log('wtf ru', response)
-  }
+  const { data: postsData, error, isLoading: loadingPosts } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => await getAllPosts()
+  })
 
   const uploadFilesMutation = useMutation({
     mutationFn: async () => {
@@ -85,14 +85,14 @@ export default function HomeScreen() {
   
 
   useEffect(() => {
-    if (fileObjs.length > 0 && !isUploading) {
+    if (fileObjs.length > 0) {
       uploadFilesMutation.mutate()
     }
-  }, [fileObjs, isUploading]);
+  }, [fileObjs]);
 
   useEffect(() => {
-    handleGetAllPosts()
-  }, [])
+    setAllPosts(postsData)
+  }, [postsData])
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -107,6 +107,16 @@ export default function HomeScreen() {
         break;
       default:
         setActiveTab('All');
+    }
+  }
+
+  console.log('loading: ', loadingPosts);
+
+  const renderPostCards = () => {
+    if (allPosts) {
+      return allPosts?.data?.map((post: any) => (
+        <PostCard key={post.id} post={post} />
+      ))
     }
   }
 
@@ -155,8 +165,10 @@ export default function HomeScreen() {
               </View>
             </View>
             )}
-            {/* <Image source={{ uri: '../../assets/images/Apple.png'}} /> */}
-            {/* Content here: */}
+            <View style={styles.contentContainer}>
+              {/* Content here: */}
+              {allPosts ? renderPostCards() : null}
+            </View>
           </View>
       </ScrollView>
     </SafeAreaView>
@@ -246,5 +258,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  contentContainer: {
+    borderWidth: 1,
+    width: '100%',
+    // flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly'
   }
 });
