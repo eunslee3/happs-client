@@ -110,8 +110,6 @@ export default function HomeScreen() {
     }
   }
 
-  console.log('loading: ', loadingPosts);
-
   const renderPostCards = () => {
     if (allPosts) {
       return allPosts?.data?.map((post: any) => (
@@ -119,6 +117,8 @@ export default function HomeScreen() {
       ))
     }
   }
+
+  console.log(loadingPosts)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -167,7 +167,7 @@ export default function HomeScreen() {
             )}
             <View style={styles.contentContainer}>
               {/* Content here: */}
-              {allPosts ? renderPostCards() : null}
+              {allPosts ? renderPostCards() : <ActivityIndicator />}
             </View>
           </View>
       </ScrollView>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   contentContainer: {
-    borderWidth: 1,
+    padding: 10,
     width: '100%',
     // flex: 1,
     flexDirection: 'row',

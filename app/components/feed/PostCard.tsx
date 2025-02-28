@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, Button, Pressable, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Pressable, Image, NativeModules } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+import { createThumbnail } from "react-native-create-thumbnail";
 
 export default function PostCard(
   post: any
 ) {
   const postData = post.post;
-  const isImg = postData.mediaUrls[0].includes('IMG')
+  const isImg = postData.mediaUrls[0].includes('JPG');
 
   if (isImg) {
     return (
@@ -14,11 +16,14 @@ export default function PostCard(
       </View>
     )
   }
-  return (
-    <View style={styles.postContainer}>
-      <Text>Hello?</Text>
-    </View>
-  );
+
+  if (postData.mediaUrls[0].includes('MOV')) {
+    return (
+      <View style={styles.postContainer}>
+        {/* <Image source={{ uri : image }} style={{ width: '100%', height: '100%' }} /> */}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
