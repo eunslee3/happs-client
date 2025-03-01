@@ -16,13 +16,7 @@ import PostCard from '../components/feed/PostCard';
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
   const [allPosts, setAllPosts] = useState<any>([]);
-  const { 
-    submittedForm, 
-    fileObjs, 
-    clearFileObjs, 
-    clearSubmittedForm,
-    isUploading
-  } = uploadStore();
+  const { isUploading } = uploadStore();
   const { user } = userStore();
 
   const { data: postsData, error, isLoading: loadingPosts } = useQuery({
