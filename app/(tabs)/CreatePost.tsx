@@ -90,6 +90,7 @@ export default function CreatePost() {
       return { formattedUrls, fileKeys };
     },
     onSuccess: async ({ formattedUrls, fileKeys }) => {
+      // Pass in video file keys to s3 to fetch video thumbnails - used for Home.tsx's feed
       await Promise.all(
         fileKeys.map(async (fileKey, idx) => {
           if (fileKey.includes(".MP4") || fileKey.includes(".MOV")) {
