@@ -1,12 +1,19 @@
 import { instance } from '../axiosInstance';
 
+interface FormattedUrls {
+  type: string,
+  url: string,
+  thumbNail?: string
+}
+
 export const createPost = async (
   userId: string,
   submittedForm: any, 
-  cleanUrls: string[], 
+  formattedUrls: FormattedUrls[], 
   fileKeys: string[]
 ) => {
   try {
+    console.log('submitted form title: ', submittedForm.title)
     const response = await instance.post('/posts/create', {
       userId,
       title: submittedForm.title,
@@ -14,7 +21,7 @@ export const createPost = async (
       location: submittedForm.location,
       allowComments: submittedForm.allowComments,
       participateInLeaderboard: submittedForm.participateInLeaderboard,
-      mediaUrls: cleanUrls,
+      mediaUrls: formattedUrls,
       fileKeys: fileKeys
     });
     // console.log('got posts: ', response)

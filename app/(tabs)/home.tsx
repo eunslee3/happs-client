@@ -21,74 +21,14 @@ export default function HomeScreen() {
     fileObjs, 
     clearFileObjs, 
     clearSubmittedForm,
+    isUploading
   } = uploadStore();
   const { user } = userStore();
-
-  const getPresignedUrl = async (fileName: string, fileType: string) => {
-    const response = await getPresignedUrlApi(fileName, fileType);
-    return response
-  }
-
-  const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
-    try {
-      const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
-        httpMethod: 'PUT',
-        headers: { 'Content-Type': fileObj.fileType },
-        sessionType: FileSystem.FileSystemSessionType.FOREGROUND
-      });
-      if (response.status !== 200) throw new Error('Upload failed');
-      return presignedUrl.split('?')[0];
-    } catch (err) {
-      console.error('Upload Error:', err);
-      throw err;
-    }
-  }
 
   const { data: postsData, error, isLoading: loadingPosts } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => await getAllPosts()
   })
-
-  const uploadFilesMutation = useMutation({
-    mutationFn: async () => {
-      const presignedObjs = await Promise.all(
-        fileObjs.map((file) => getPresignedUrl(file.fileName, file.fileType))
-      );
-  
-      const cleanUrls = await Promise.allSettled(
-        presignedObjs.map((presignedObj, idx) =>
-          uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
-        )
-      );
-  
-      const successfulUrls = cleanUrls
-        .filter((result) => result.status === 'fulfilled')
-        .map((result) => (result as PromiseFulfilledResult<string>).value);
-  
-      const fileKeys = presignedObjs.map((presignedObj) => presignedObj.fileKey);
-  
-      return { successfulUrls, fileKeys };
-    },
-    onSuccess: async ({ successfulUrls, fileKeys }) => {
-      await createPost(user.id, submittedForm, successfulUrls, fileKeys);
-      clearFileObjs();
-      clearSubmittedForm();
-      Toast.show({
-        text1: 'Post created successfully!',
-        type: 'success',
-      });
-    },
-    onError: (err) => {
-      console.error('Upload Error:', err);
-    },
-  });
-  
-
-  useEffect(() => {
-    if (fileObjs.length > 0) {
-      uploadFilesMutation.mutate()
-    }
-  }, [fileObjs]);
 
   useEffect(() => {
     setAllPosts(postsData)
@@ -117,8 +57,6 @@ export default function HomeScreen() {
       ))
     }
   }
-
-  console.log(loadingPosts)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -153,7 +91,7 @@ export default function HomeScreen() {
           </View>
           <View>
             {/* Progress bar */}
-            { fileObjs.length > 0 && (
+            { isUploading && (
             <View style={styles.uploadProgressContainer}>
               <View style={styles.uploadProgressItem}>
                 <View style={styles.progressComponentContainer}>

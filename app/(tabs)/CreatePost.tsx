@@ -8,6 +8,13 @@ import assetsStore from '@/store/assetStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as MediaLibrary from 'expo-media-library';
 import uploadStore from '@/store/uploadStore';
+import userStore from '@/store/userStore';
+import { useMutation } from '@tanstack/react-query';
+import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
+import * as FileSystem from 'expo-file-system';
+import { createPost } from '@/api/posts/createPost';
+import { getThumbnails } from '@/api/posts/getThumbnails';
+import Toast from 'react-native-toast-message';
 
 export default function CreatePost() {
   const router = useRouter();
@@ -20,9 +27,104 @@ export default function CreatePost() {
     allowComments: true,
     participateInLeaderboard: true
   });
-  const { setSubmittedForm, setFileObjs } = uploadStore();
+  const { setIsUploading } = uploadStore();
+  const { user } = userStore();
 
+  const getPresignedUrl = async (fileName: string, fileType: string) => {
+    const response = await getPresignedUrlApi(fileName, fileType);
+    return response
+  }
 
+  // Uploads file to S3 bucket - if successful, return the presignedURL for cleanup
+  const uploadToS3 = async (fileObj: any, presignedUrl: any) => {
+    try {
+      const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
+        httpMethod: 'PUT',
+        headers: { 'Content-Type': fileObj.fileType },
+        sessionType: FileSystem.FileSystemSessionType.FOREGROUND
+      });
+      if (response.status !== 200) throw new Error('Upload failed');
+      return presignedUrl.split('?')[0];
+    } catch (err) {
+      console.error('Upload Error:', err);
+      throw err;
+    }
+  }
+
+  const uploadFilesMutation = useMutation({
+    mutationFn: async ( fileObjs: any ) => {
+      setIsUploading(true);
+      const presignedObjs = await Promise.all(
+        fileObjs.map((file: any) => getPresignedUrl(file.fileName, file.fileType))
+      );
+  
+      const cleanUrls = await Promise.allSettled(
+        presignedObjs.map((presignedObj, idx) =>
+          uploadToS3(fileObjs[idx], presignedObj.presignedUrl)
+        )
+      );
+  
+      const successfulUrls = cleanUrls
+        .filter((result) => result.status === 'fulfilled')
+        .map((result) => (result as PromiseFulfilledResult<string>).value);
+
+      const formattedUrls = successfulUrls.map((url) => {
+        if (url.includes('.MP4') || url.includes('.MOV')) {
+          return {
+            type: 'video',
+            url: url,
+            thumbnailUrl: ''
+          }
+        } else {
+          return {
+            type: 'image',
+            url: url
+          }
+        }
+      })
+  
+      const fileKeys = presignedObjs.map((presignedObj) => presignedObj.fileKey);
+  
+      return { formattedUrls, fileKeys };
+    },
+    onSuccess: async ({ formattedUrls, fileKeys }) => {
+      await Promise.all(
+        fileKeys.map(async (fileKey, idx) => {
+          if (fileKey.includes(".MP4") || fileKey.includes(".MOV")) {
+            const response = await getThumbnails(fileKey);
+            const cleanThumbnailUrl = response.data.thumbnailUrl.split("?")[0];
+            formattedUrls[idx].thumbnailUrl = cleanThumbnailUrl;
+          }
+        })
+      );
+
+      await createPost(user.id, form, formattedUrls, fileKeys);
+      // console.log("Thumbnail URLs:", thumbnailUrls);
+      setForm({
+        title: '',
+        description: '',
+        location: '',
+        allowComments: true,
+        participateInLeaderboard: true
+      })
+      setIsUploading(false);
+      Toast.show({
+        text1: 'Post created successfully!',
+        type: 'success',
+      });
+    },
+    onError: (err) => {
+      setIsUploading(false);
+      Toast.show({
+        text1: 'Unable to upload post',
+        type: 'error',
+      });
+      console.error('Upload Error:', err);
+    },
+  });
+
+  // IOS - The file name for their assets starts with ph://. This causes issues when trying to
+  // upload or use the assets
   async function convertPhUriToFile(uri: string, assetId?: string) {
     try {
       let fileObj: any = {};
@@ -56,6 +158,7 @@ export default function CreatePost() {
     }
   }
 
+  // Prevents the user from uploading more than 10 assets at one time
   useEffect(() => {
     if (selectedAsset && assets.length < 10) {
       const parsedAssets = JSON.parse(selectedAsset);
@@ -68,10 +171,12 @@ export default function CreatePost() {
     assetsStore.getState().clearAssets()
   }
 
+  // Handles the delete functionality of an asset
   const handleRemoveSelectedAsset = (selectedAsset: any) => {
     assetsStore.getState().setAssets(assets.filter((asset: any) => asset.id!== selectedAsset.id));
   };
 
+  // Shows the duration of a video asset
   const formatFloatToMinutes = (floatValue: number) => {
     const minutes = (floatValue / 60).toFixed(2).toString().replace('.', ':');
     return `${minutes}`;
@@ -130,10 +235,9 @@ export default function CreatePost() {
   const handleSubmit = async () => {
     try {
       const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
-      
-      setSubmittedForm(form)
-      setFileObjs(fileObjs)
-      router.navigate('/Home')
+      uploadFilesMutation.mutate(fileObjs)
+      console.log('fileObjs: ', fileObjs)  
+      // router.navigate('/Home')
     } catch (err) {
       console.error('Error submitting post', err);
     }
