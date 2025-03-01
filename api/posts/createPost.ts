@@ -6,9 +6,17 @@ interface FormattedUrls {
   thumbNail?: string
 }
 
+interface SubmittedForm {
+  title: string,
+  description: string,
+  location: string,
+  allowComments: boolean,
+  participateInLeaderboard: boolean,
+}
+
 export const createPost = async (
   userId: string,
-  submittedForm: any, 
+  submittedForm: SubmittedForm, 
   formattedUrls: FormattedUrls[], 
   fileKeys: string[]
 ) => {
