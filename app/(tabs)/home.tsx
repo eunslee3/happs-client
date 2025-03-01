@@ -4,12 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import uploadStore from '@/store/uploadStore';
-import * as FileSystem from 'expo-file-system';
-import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
-import { createPost } from '@/api/posts/createPost';
-import userStore from '@/store/userStore';
-import Toast from 'react-native-toast-message';
-import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import PostCard from '../components/feed/PostCard';
 
@@ -17,9 +11,8 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
   const [allPosts, setAllPosts] = useState<any>([]);
   const { isUploading } = uploadStore();
-  const { user } = userStore();
 
-  const { data: postsData, error, isLoading: loadingPosts } = useQuery({
+  const { data: postsData } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => await getAllPosts()
   })
