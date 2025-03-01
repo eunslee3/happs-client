@@ -52,7 +52,7 @@ export default function HomeScreen() {
 
   const renderPostCards = () => {
     if (allPosts) {
-      return allPosts?.data?.map((post: any) => (
+      return allPosts?.map((post: any) => (
         <PostCard key={post.id} post={post} />
       ))
     }

@@ -68,15 +68,17 @@ export default function CreatePost() {
         .filter((result) => result.status === 'fulfilled')
         .map((result) => (result as PromiseFulfilledResult<string>).value);
 
-      const formattedUrls = successfulUrls.map((url) => {
+      const formattedUrls = successfulUrls.map((url, idx) => {
         if (url.includes('.MP4') || url.includes('.MOV')) {
           return {
+            id: idx,
             type: 'video',
             url: url,
             thumbnailUrl: ''
           }
         } else {
           return {
+            id: idx,
             type: 'image',
             url: url
           }
@@ -236,8 +238,7 @@ export default function CreatePost() {
     try {
       const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
       uploadFilesMutation.mutate(fileObjs)
-      console.log('fileObjs: ', fileObjs)  
-      // router.navigate('/Home')
+      router.navigate('/Home')
     } catch (err) {
       console.error('Error submitting post', err);
     }

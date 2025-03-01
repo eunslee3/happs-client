@@ -3,7 +3,7 @@ import { instance } from '../axiosInstance';
 interface FormattedUrls {
   type: string,
   url: string,
-  thumbNail?: string
+  thumbnailUrl?: string
 }
 
 interface SubmittedForm {
@@ -21,7 +21,6 @@ export const createPost = async (
   fileKeys: string[]
 ) => {
   try {
-    console.log('submitted form title: ', submittedForm.title)
     const response = await instance.post('/posts/create', {
       userId,
       title: submittedForm.title,
