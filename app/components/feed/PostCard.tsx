@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View, Button, Pressable, Image, NativeModules } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, View, Pressable, Image } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
 
 export default function PostCard({
