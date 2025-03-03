@@ -9,7 +9,7 @@ export default function PostCard({ post }: { post: any }) {
   // S3 doesn't allow you to access the url right away - it'll return a 403
   // We need to give it some time before we load the image
   useEffect(() => {
-    if (post.type === 'video') {
+    if (post.mediaUrls[0].type === 'video') {
       let attempts = 0;
   
       async function checkImageAvailability() {
@@ -34,7 +34,7 @@ export default function PostCard({ post }: { post: any }) {
   }, [post]);
 
   // Prevent rendering if thumbnailUrl is missing
-  if (!post.mediaUrls[0]?.thumbnailUrl && post.type === 'video') {
+  if (!post.mediaUrls[0]?.thumbnailUrl && post.mediaUrls[0].type === 'video') {
     console.log("Thumbnail URL is missing, skipping render");
     return null;
   }

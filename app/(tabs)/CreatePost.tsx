@@ -20,6 +20,7 @@ import { useQueryClient } from '@tanstack/react-query'
 export default function CreatePost() {
   const router = useRouter();
   const assets = assetsStore((state: any) => state.assets);
+  const { clearAssets } = assetsStore();
   const { selectedAsset } = useLocalSearchParams<{ selectedAsset: any }>();
   const [form, setForm] = useState({
     title: '',
@@ -113,6 +114,7 @@ export default function CreatePost() {
         participateInLeaderboard: true
       })
       setIsUploading(false);
+      clearAssets();
       await queryClient.invalidateQueries({ queryKey: ['posts'] })
       Toast.show({
         text1: 'Post created successfully!',
