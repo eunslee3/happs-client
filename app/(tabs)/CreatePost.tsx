@@ -105,7 +105,6 @@ export default function CreatePost() {
       );
 
       await createPost(user.id, form, formattedUrls, fileKeys);
-      // console.log("Thumbnail URLs:", thumbnailUrls);
       setForm({
         title: '',
         description: '',
