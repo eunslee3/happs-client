@@ -1,11 +1,22 @@
-import { StyleSheet, View, Pressable, Image } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Octicons from '@expo/vector-icons/Octicons';
+import { WebView } from "react-native-webview";
+import { Image } from 'expo-image';
 
 export default function PostCard({
   post
 }: { post: any }) {
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setShouldRender(true), 1000); // 1-second delay
+    return () => clearTimeout(timeout);
+  }, [post]);
+
+  console.log('postCard: ', post.mediaUrls[0].thumbnailUrl);
   
-  if (post.mediaUrls[0].type === 'video') {
+  if (post.mediaUrls[0].type === 'video' && shouldRender) {
     return (
       <View style={styles.postContainer}>
         <Octicons
@@ -15,7 +26,11 @@ export default function PostCard({
           source={require('../../../assets/images/video_icon.png')} 
           style={styles.videoIcon}
         />
-        <Image source={{ uri : post.mediaUrls[0].thumbnailUrl }} style={styles.thumbnail} />
+        <Image 
+          source={{ uri : post.mediaUrls[0].thumbnailUrl }} 
+          style={styles.thumbnail}
+          key={post.mediaUrls[0].thumbnailUrl} 
+        />
       </View>
     );
   }

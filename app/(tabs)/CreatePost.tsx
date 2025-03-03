@@ -15,6 +15,7 @@ import * as FileSystem from 'expo-file-system';
 import { createPost } from '@/api/posts/createPost';
 import { getThumbnails } from '@/api/posts/getThumbnails';
 import Toast from 'react-native-toast-message';
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function CreatePost() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function CreatePost() {
   });
   const { setIsUploading } = uploadStore();
   const { user } = userStore();
+  const queryClient = useQueryClient();
 
   const getPresignedUrl = async (fileName: string, fileType: string) => {
     const response = await getPresignedUrlApi(fileName, fileType);
@@ -111,6 +113,7 @@ export default function CreatePost() {
         participateInLeaderboard: true
       })
       setIsUploading(false);
+      await queryClient.invalidateQueries({ queryKey: ['posts'] })
       Toast.show({
         text1: 'Post created successfully!',
         type: 'success',

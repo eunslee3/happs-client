@@ -14,7 +14,8 @@ export default function HomeScreen() {
 
   const { data: postsData } = useQuery({
     queryKey: ['posts'],
-    queryFn: async () => await getAllPosts()
+    queryFn: async () => await getAllPosts(),
+    refetchOnWindowFocus: false
   })
 
   useEffect(() => {
