@@ -9,30 +9,32 @@ export default function PostCard({ post }: { post: any }) {
   // S3 doesn't allow you to access the url right away - it'll return a 403
   // We need to give it some time before we load the image
   useEffect(() => {
-    let attempts = 0;
+    if (post.type === 'video') {
+      let attempts = 0;
   
-    async function checkImageAvailability() {
-      if (attempts > 5) return; // Stop checking after 5 tries
-  
-      try {
-        const response = await fetch(post.mediaUrls[0].thumbnailUrl);
-        if (response.ok) {
-          setImageAvailable(true);
-          return;
-        }
-      } catch (error) {}
-  
-      setTimeout(() => {
-        attempts++;
-        checkImageAvailability();
-      }, 2000); // Retry every 2 seconds
+      async function checkImageAvailability() {
+        if (attempts > 5) return; // Stop checking after 5 tries
+    
+        try {
+          const response = await fetch(post.mediaUrls[0].thumbnailUrl);
+          if (response.ok) {
+            setImageAvailable(true);
+            return;
+          }
+        } catch (error) {}
+    
+        setTimeout(() => {
+          attempts++;
+          checkImageAvailability();
+        }, 2000); // Retry every 2 seconds
+      }
+    
+      checkImageAvailability();
     }
-  
-    checkImageAvailability();
   }, [post]);
 
   // Prevent rendering if thumbnailUrl is missing
-  if (!post.mediaUrls[0]?.thumbnailUrl) {
+  if (!post.mediaUrls[0]?.thumbnailUrl && post.type === 'video') {
     console.log("Thumbnail URL is missing, skipping render");
     return null;
   }
@@ -62,7 +64,7 @@ export default function PostCard({ post }: { post: any }) {
     <View style={styles.postContainer}>
       <Image 
         source={{ uri: post.mediaUrls[0].url, cache: "reload" }} 
-        style={{ width: '100%', height: '100%' }} 
+        style={styles.thumbnail} 
       />
     </View>
   );
