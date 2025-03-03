@@ -4,10 +4,10 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { Image } from 'expo-image';
 
 export default function PostCard({ post }: { post: any }) {
-  const [shouldRender, setShouldRender] = useState(false);
-  const [imageKey, setImageKey] = useState(0);
   const [imageAvailable, setImageAvailable] = useState(false);
 
+  // S3 doesn't allow you to access the url right away - it'll return a 403
+  // We need to give it some time before we load the image
   useEffect(() => {
     let attempts = 0;
   
@@ -30,7 +30,7 @@ export default function PostCard({ post }: { post: any }) {
   
     checkImageAvailability();
   }, [post]);
-  
+
   // Prevent rendering if thumbnailUrl is missing
   if (!post.mediaUrls[0]?.thumbnailUrl) {
     console.log("Thumbnail URL is missing, skipping render");
@@ -40,18 +40,19 @@ export default function PostCard({ post }: { post: any }) {
   if (post.mediaUrls[0].type === 'video') {
     return (
       <View style={styles.postContainer}>
-        <Octicons
-          name="video"
-          color='white'
-          size={20} 
-          style={styles.videoIcon}
-        />
         { imageAvailable && (
-          <Image 
-          source={{ uri: post.mediaUrls[0].thumbnailUrl, cache: "reload" }} 
-          style={styles.thumbnail}
-          key={imageKey} 
-        />
+          <>
+            <Octicons
+              name="video"
+              color='white'
+              size={20} 
+              style={styles.videoIcon}
+            />
+              <Image 
+              source={{ uri: post.mediaUrls[0].thumbnailUrl, cache: "reload" }} 
+              style={styles.thumbnail}
+            />
+          </>
         )}
       </View>
     );
