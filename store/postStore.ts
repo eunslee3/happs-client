@@ -6,6 +6,7 @@ interface PostState {
   setPosts: (posts: any[]) => void;
   setSelectedPost: (selectedPost: any) => void;
   clearAssets: () => void;
+  clearSelectedPost: () => void;
 }
 
 const postStore = create<PostState>((set) => ({
@@ -14,6 +15,7 @@ const postStore = create<PostState>((set) => ({
   setPosts: (posts: any[]) => set({ posts }),
   setSelectedPost: (selectedPost: any) => set({ selectedPost}),
   clearAssets: () => set({ posts: [] }),
+  clearSelectedPost: () => set({ selectedPost: {} }),
 }));
 
 export default postStore;

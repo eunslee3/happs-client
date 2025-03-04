@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable, FlatList } from 'react-native';
 import React, { useState } from 'react';
 import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
@@ -6,11 +6,14 @@ import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+import PostDetail from './viewPost/PostDetails';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
+
+  console.log('selectedPost: ', selectedPost)
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -61,6 +64,7 @@ export default function ViewPost() {
       >
         {selectedPost ? renderMedia() : null}
       </PagerView>
+      <PostDetail user={selectedPost.user} post={selectedPost} />
     </View>
   );
 }
@@ -71,6 +75,7 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
     backgroundColor: "white",
+    flexDirection: 'column',
   },
   navContainer: {
     position: 'absolute',
@@ -81,10 +86,9 @@ const styles = StyleSheet.create({
   },
   pagerContainer: {
     width: "100%",
-    height: 600,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    padding: 0
+    height: '70%',
+    padding: 0,
+    margin: 0
   },
   media: {
     width: "100%",
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    top: 50, // Adjust position above bottom edge
+    top: 57,
     alignSelf: 'center',
     flexDirection: 'row',
     zIndex: 1,

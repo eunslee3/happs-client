@@ -1,5 +1,5 @@
-import { StyleSheet, View, Pressable } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
+import React, { useRef, useEffect } from 'react';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 export default function ViewVideo({ videoSource, idx }: { videoSource: any, idx: number }) {
@@ -10,7 +10,7 @@ export default function ViewVideo({ videoSource, idx }: { videoSource: any, idx:
   });
 
   return (
-    <>
+    <View style={styles.videoContainer}>
       <VideoView
         key={idx}
         style={styles.video}
@@ -18,15 +18,18 @@ export default function ViewVideo({ videoSource, idx }: { videoSource: any, idx:
         allowsFullscreen
         allowsPictureInPicture
       />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  videoContainer: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#1B1B1B'
+  },
   video: {
     height: '100%',
     width: '100%',
-    borderWidth: 3,
-    borderColor: 'green'
   }
 });
