@@ -1,13 +1,16 @@
-import { StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
-import React from 'react';
+import { StyleSheet, View, Pressable } from 'react-native';
+import React, { useState } from 'react';
 import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
+  const [currentPage, setCurrentPage] = useState(0);
+  const router = useRouter();
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -36,17 +39,29 @@ export default function ViewPost() {
   };
 
   return (
-    // Option 1: Wrap with SafeAreaView if you need to respect safe areas
-    // <SafeAreaView style={styles.container}>
     <View style={styles.container}>
-      <View>
-        <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="black" />
-      </View>
-      <PagerView style={styles.pagerContainer} initialPage={0}>
+      <Pressable style={styles.navContainer} onPress={() => router.back()}>
+        <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="white" />
+      </Pressable>
+      <View style={styles.paginationContainer}>
+          {selectedPost?.mediaUrls?.map((_: any, index: number) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                currentPage === index ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
+        </View>
+      <PagerView 
+        style={styles.pagerContainer} 
+        initialPage={0}
+        onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+      >
         {selectedPost ? renderMedia() : null}
       </PagerView>
     </View>
-    // </SafeAreaView>
   );
 }
 
@@ -57,10 +72,12 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: "white",
   },
-  containerOfPager: {
-    borderWidth: 10,
-    borderColor: 'green',
-    margin: 0,
+  navContainer: {
+    position: 'absolute',
+    width: "100%",
+    height: 30,
+    top: 50,
+    zIndex: 1,
   },
   pagerContainer: {
     width: "100%",
@@ -72,5 +89,28 @@ const styles = StyleSheet.create({
   media: {
     width: "100%",
     height: "100%",
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 6,
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    backgroundColor: 'white',
+    width: 10,
+    height: 10,
+  },
+  inactiveDot: {
+    backgroundColor: 'gray',
+    opacity: 0.5,
+  },
+  paginationContainer: {
+    position: 'absolute',
+    top: 50, // Adjust position above bottom edge
+    alignSelf: 'center',
+    flexDirection: 'row',
+    zIndex: 1,
+    height: 30
   },
 });
