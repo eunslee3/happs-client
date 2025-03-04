@@ -3,12 +3,15 @@ import React, { useState, useEffect } from 'react';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import postStore from '@/store/postStore';
 
 export default function PostCard({ post }: { post: any }) {
   const [imageAvailable, setImageAvailable] = useState(false);
   const router = useRouter();
+  const { setSelectedPost } = postStore();
   // S3 doesn't allow you to access the url right away - it'll return a 403
   // We need to give it some time before we load the image
+
   useEffect(() => {
     if (post.mediaUrls[0].type === 'video') {
       let attempts = 0;
@@ -35,11 +38,9 @@ export default function PostCard({ post }: { post: any }) {
   }, [post]);
 
   const handleNavigation = () => {
+    setSelectedPost(post)
     router.push({
       pathname: '../../components/ViewPost',
-      params: {
-        post: JSON.stringify(post)
-      }
     })
   }
 
