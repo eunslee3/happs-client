@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, FlatList } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
@@ -7,13 +7,12 @@ import ViewVideo from './viewPost/ViewVideo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import PostDetail from './viewPost/PostDetails';
+import { BlurView } from 'expo-blur';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
-
-  console.log('selectedPost: ', selectedPost)
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -21,11 +20,20 @@ export default function ViewPost() {
     return allMedia.map((media: any, idx: number) => {
       if (media.type === 'video') {
         return (
+          <>
           <ViewVideo
             key={idx} 
             videoSource={media.url}
             idx={idx}
           />
+          <View style={styles.metricsContainer}>
+            <View style={styles.blurContainer}>
+              <BlurView intensity={100} style={styles.metrics}>
+                <AntDesign name="heart" size={24} color="white" />
+              </BlurView>
+            </View>
+          </View>
+          </>
         );
       } else if (media.type === 'image') {
         return (
@@ -42,7 +50,7 @@ export default function ViewPost() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Pressable style={styles.navContainer} onPress={() => router.back()}>
         <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="white" />
       </Pressable>
@@ -65,7 +73,7 @@ export default function ViewPost() {
         {selectedPost ? renderMedia() : null}
       </PagerView>
       <PostDetail user={selectedPost.user} post={selectedPost} />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -95,15 +103,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   dot: {
-    width: 8,
-    height: 8,
+    width: 6,
+    height: 6,
     borderRadius: 6,
-    marginHorizontal: 5,
+    marginHorizontal: 3,
   },
   activeDot: {
     backgroundColor: 'white',
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
   },
   inactiveDot: {
     backgroundColor: 'gray',
@@ -113,8 +121,32 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 57,
     alignSelf: 'center',
+    alignItems: 'center',
     flexDirection: 'row',
     zIndex: 1,
     height: 30
   },
+  metricsContainer: {
+    position: 'absolute',
+    bottom: 12,
+    width: '100%',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blurContainer: {
+    height: 40,
+    width: 73,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    overflow: 'hidden'
+  },
+  metrics: {
+    width: 73,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100
+  }
 });

@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable, Animated } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Image } from 'expo-image';
@@ -20,6 +20,6 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
 const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
-    width: '100%',
+    width: '100%'
   }
 });
