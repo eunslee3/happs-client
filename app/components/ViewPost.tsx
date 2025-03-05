@@ -30,31 +30,49 @@ export default function ViewPost() {
             idx={idx}
           />
           <View style={styles.metricsContainer}>
-            <View style={styles.blurContainer}>
+            <Pressable style={styles.blurContainer}>
               <BlurView intensity={100} style={styles.metrics}>
                 <AntDesign name="heart" size={17} color="white" />
                 <Text style={styles.metricsText}>{selectedPost.likes}</Text>
               </BlurView>
-            </View>
-            <View style={styles.blurContainer}>
+            </Pressable>
+            <Pressable style={styles.blurContainer}>
               <BlurView intensity={100} style={styles.metrics}>
                 <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
                 <Text style={styles.metricsText}>
                   {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
                 </Text>
               </BlurView>
-            </View>
+            </Pressable>
           </View>
           </>
         );
       } else if (media.type === 'image') {
         return (
+          <>
           <Image
             key={idx}
             source={{ uri: media.url }}
             style={styles.media}
             contentFit='cover'
           />
+          <View style={styles.metricsContainer}>
+            <Pressable style={styles.blurContainer}>
+              <BlurView intensity={100} style={styles.metrics}>
+                <AntDesign name="heart" size={17} color="white" />
+                <Text style={styles.metricsText}>{selectedPost.likes}</Text>
+              </BlurView>
+            </Pressable>
+            <Pressable style={styles.blurContainer}>
+              <BlurView intensity={100} style={styles.metrics}>
+                <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
+                <Text style={styles.metricsText}>
+                  {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
+                </Text>
+              </BlurView>
+            </Pressable>
+          </View>
+          </>
         );
       }
       return null;
