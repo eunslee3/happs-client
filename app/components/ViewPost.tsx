@@ -1,10 +1,11 @@
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, Text } from 'react-native';
 import React, { useState } from 'react';
 import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import PostDetail from './viewPost/PostDetails';
 import { BlurView } from 'expo-blur';
@@ -13,6 +14,8 @@ export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
+
+  console.log('selected post', selectedPost)
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -29,7 +32,16 @@ export default function ViewPost() {
           <View style={styles.metricsContainer}>
             <View style={styles.blurContainer}>
               <BlurView intensity={100} style={styles.metrics}>
-                <AntDesign name="heart" size={24} color="white" />
+                <AntDesign name="heart" size={17} color="white" />
+                <Text style={styles.metricsText}>{selectedPost.likes}</Text>
+              </BlurView>
+            </View>
+            <View style={styles.blurContainer}>
+              <BlurView intensity={100} style={styles.metrics}>
+                <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
+                <Text style={styles.metricsText}>
+                  {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
+                </Text>
               </BlurView>
             </View>
           </View>
@@ -133,6 +145,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row'
   },
   blurContainer: {
     height: 40,
@@ -147,6 +160,10 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 100
+    flexDirection: 'row'
+  },
+  metricsText: {
+    marginLeft: 5,
+    color: 'white'
   }
 });
