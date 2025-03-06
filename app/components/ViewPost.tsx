@@ -9,6 +9,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import PostDetail from './viewPost/PostDetails';
 import { BlurView } from 'expo-blur';
+import Metrics from './viewPost/Metrics';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
@@ -29,22 +30,7 @@ export default function ViewPost() {
             videoSource={media.url}
             idx={idx}
           />
-          <View style={styles.metricsContainer}>
-            <Pressable style={styles.blurContainer}>
-              <BlurView intensity={100} style={styles.metrics}>
-                <AntDesign name="heart" size={17} color="white" />
-                <Text style={styles.metricsText}>{selectedPost.likes}</Text>
-              </BlurView>
-            </Pressable>
-            <Pressable style={styles.blurContainer}>
-              <BlurView intensity={100} style={styles.metrics}>
-                <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
-                <Text style={styles.metricsText}>
-                  {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
-                </Text>
-              </BlurView>
-            </Pressable>
-          </View>
+          <Metrics selectedPost={selectedPost}/>
           </>
         );
       } else if (media.type === 'image') {
@@ -56,22 +42,7 @@ export default function ViewPost() {
             style={styles.media}
             contentFit='cover'
           />
-          <View style={styles.metricsContainer}>
-            <Pressable style={styles.blurContainer}>
-              <BlurView intensity={100} style={styles.metrics}>
-                <AntDesign name="heart" size={17} color="white" />
-                <Text style={styles.metricsText}>{selectedPost.likes}</Text>
-              </BlurView>
-            </Pressable>
-            <Pressable style={styles.blurContainer}>
-              <BlurView intensity={100} style={styles.metrics}>
-                <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
-                <Text style={styles.metricsText}>
-                  {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
-                </Text>
-              </BlurView>
-            </Pressable>
-          </View>
+          <Metrics selectedPost={selectedPost}/>
           </>
         );
       }
