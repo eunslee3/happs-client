@@ -5,6 +5,19 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function Metrics({ selectedPost }: { selectedPost: any }) {
+  const numberOfInteractions = (number: number) => {
+    if (number > 1000 && number < 100000) {
+      return `${(number / 1000).toFixed(1)}k`;
+    }
+    if (number > 100000 && number < 1000000) {
+      return `${Math.trunc(number / 1000)}k`
+    }
+    if (number > 1000000) {
+      return `${Math.trunc(number / 1000000)}m`
+    }
+
+    return number;
+  }
 
   return (
     <View style={styles.metricsContainer}>
@@ -18,7 +31,7 @@ export default function Metrics({ selectedPost }: { selectedPost: any }) {
       <BlurView intensity={100} style={styles.metrics}>
         <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
         <Text style={styles.metricsText}>
-          {selectedPost.Comments?.length ? selectedPost.Comments.length : 0}
+          {numberOfInteractions(selectedPost.Comment.length)}
         </Text>
       </BlurView>
     </Pressable>
