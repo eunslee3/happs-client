@@ -1,6 +1,6 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import Octicons from '@expo/vector-icons/Octicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import postStore from '@/store/postStore';
@@ -53,17 +53,62 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
         </View>
       </View>
       
-      <View>
-        <View></View>
+      <View style={styles.detailsContainer}>
+        <View style={styles.locationContainer}>
+          <View style={styles.locationIconBg}>
+            <MaterialIcons name="location-on" size={24} color="#00DCB7" />
+          </View>
+          <Text style={{ marginLeft: 10 }}>
+            {post.location.length < 1 ? 'No Location' : post.location}
+          </Text>
+        </View>
       </View>
+
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>
+          {post.title}
+        </Text>
+        <Text style={styles.description}>
+          {post.description}
+        </Text>
+      </View>
+
+      <View style={styles.tagsContainer}>
+        <View style={styles.tag}>
+          <Text style={{ color: '#9155FF' }}>#Travel</Text>
+        </View>
+        <View style={styles.tag}>
+          <Text style={{ color: '#9155FF' }}>#Abe</Text>
+        </View>
+        <View style={styles.tag}>
+          <Text style={{ color: '#9155FF' }}>#HiddenGem</Text>
+        </View>
+        <View style={styles.tag}>
+          <Text style={{ color: '#9155FF' }}>#BigRock</Text>
+        </View>
+        <View style={styles.tag}>
+          <Text style={{ color: '#9155FF' }}>#BBQ</Text>
+        </View>
+      </View>
+
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>
+          {post.title}
+        </Text>
+        <Text style={styles.description}>
+          {post.description}
+        </Text>
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     width: '100%',
+    height: 'auto',
     padding: 15
   },
   userInfoContainer: {
@@ -106,6 +151,55 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   detailsContainer: {
-    width: '100%'
+    width: '100%',
+    flexDirection: 'column'
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  locationIconBg: {
+    backgroundColor: '#F4F6F7',
+    width: 32,
+    height: 32,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textContainer: {
+    width: '100%',
+    flexDirection: 'column'
+  },
+  title: {
+    fontSize: 24,
+    marginTop: 10,
+    marginBottom: 10,
+    fontWeight: 'bold'
+  },
+  description: {
+    fontSize: 14,
+  },
+  tagsContainer: {
+    padding: 10,
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+  },
+  tag: {
+    padding: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    // height: 25,
+    width: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    marginLeft: 5,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: '#CDCBCF'
   }
 });

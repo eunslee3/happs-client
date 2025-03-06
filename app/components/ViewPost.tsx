@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import React, { useState } from 'react';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
@@ -17,29 +17,27 @@ export default function ViewPost() {
     return allMedia.map((media: any, idx: number) => {
       if (media.type === 'video') {
         return (
-          <>
-          <ViewVideo
-            key={idx} 
-            videoSource={media.url}
-            selectedPost={selectedPost}
-            currentPage={currentPage}
-            idx={idx}
-          />
-          <Metrics selectedPost={selectedPost}/>
-          </>
+          <View key={idx} style={styles.mediaContainer}>
+            <ViewVideo
+              videoSource={media.url}
+              selectedPost={selectedPost}
+              currentPage={currentPage}
+              idx={idx}
+            />
+            <Metrics selectedPost={selectedPost} />
+          </View>
         );
       } else if (media.type === 'image') {
         return (
-          <>
-          <ViewImage
-            key={idx}
-            idx={idx}
-            imageUrl={media.url}
-            selectedPost={selectedPost}
-            currentPage={currentPage}
-          />
-          <Metrics selectedPost={selectedPost}/>
-          </>
+          <View key={idx} style={styles.mediaContainer}>
+            <ViewImage
+              idx={idx}
+              imageUrl={media.url}
+              selectedPost={selectedPost}
+              currentPage={currentPage}
+            />
+            <Metrics selectedPost={selectedPost} />
+          </View>
         );
       }
       return null;
@@ -48,13 +46,15 @@ export default function ViewPost() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PagerView 
-        style={styles.pagerContainer} 
-        initialPage={0}
-        onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
-      >
-        {selectedPost ? renderMedia() : null}
-      </PagerView>
+      <View style={styles.pagerWrapper}>
+        <PagerView 
+          style={styles.pagerContainer} 
+          initialPage={0}
+          onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+        >
+          {selectedPost ? renderMedia() : null}
+        </PagerView>
+      </View>
       <PostDetail user={selectedPost.user} post={selectedPost} />
     </ScrollView>
   );
@@ -62,23 +62,19 @@ export default function ViewPost() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    margin: 0,
-    padding: 0,
+    flexGrow: 1,
     backgroundColor: "white",
     flexDirection: 'column',
   },
-  navContainer: {
-    position: 'absolute',
+  pagerWrapper: {
+    height: 600,
     width: "100%",
-    height: 30,
-    top: 50,
-    zIndex: 1,
   },
   pagerContainer: {
-    width: "100%",
-    height: '70%',
-    padding: 0,
-    margin: 0
+    flex: 1,
   },
+  mediaContainer: {
+    width: "100%",
+    height: "100%",
+  }
 });
