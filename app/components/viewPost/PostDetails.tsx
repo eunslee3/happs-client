@@ -5,28 +5,56 @@ import { Image } from 'expo-image';
 
 export default function PostDetail({ user, post }: { user: any, post: any }) {
   const [commentInput, setCommentInput] = useState('');
-  console.log({
-    post,
-    user
-  })
 
   const timeAgo = (timestamp: string | number | Date): string => {
     const now = new Date();
     const createdAt = new Date(timestamp);
     const seconds = Math.floor((now.getTime() - createdAt.getTime()) / 1000);
   
-    if (seconds < 60) return `${seconds} second${seconds === 1 ? "" : "s"} ago`;
+    if (seconds < 60) return `${seconds} sec${seconds === 1 ? "" : "s"}`;
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+    if (minutes < 60) return `${minutes} min${minutes === 1 ? "" : "s"}`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"}`;
     const days = Math.floor(hours / 24);
-    if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+    if (days < 30) return `${days} day${days === 1 ? "" : "s"}`;
     const months = Math.floor(days / 30);
-    if (months < 12) return `${months} month${months === 1 ? "" : "s"} ago`;
+    if (months < 12) return `${months} month${months === 1 ? "" : "s"}`;
     const years = Math.floor(days / 365);
-    return `${years} year${years === 1 ? "" : "s"} ago`;
+    return `${years} year${years === 1 ? "" : "s"}`;
   };
+
+  const renderComment = () => {
+    return post.Comment?.map((comment: any, idx: number) => {
+      const { content, user, createdAt } = comment || {};
+      let pfpSource = user.profilePictureUrl;
+      return (
+        <View
+          key={idx}
+          style={styles.commentContainer}
+        >
+          { pfpSource ? 
+            <Image 
+              style={styles.commentPfp}
+              source={{ uri: pfpSource }}
+            />
+            :
+            <Image
+              style={styles.commentPfp}
+              source={require('../../../assets/images/Default_pfp.jpg')} 
+            />
+          }
+          <View style={styles.commentDetails}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ color: '#7E8184' }}>{user.username}</Text>
+              <Text style={{ color: '#7E8184', marginLeft: 7 }}>{timeAgo(createdAt)}</Text>
+            </View>
+            <Text style={{ marginTop: 5 }}>{content}</Text>
+          </View>
+        </View>
+      )
+    })
+  }
 
   const handleTextChange = (text: any) => {
     setCommentInput(text);
@@ -96,6 +124,10 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
         </View>
       </View>
 
+      <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'bold', color: '#7E8184' }}>
+        Comments
+      </Text>
+
       <View style={styles.commentInputContainer}>
         <TextInput 
           style={styles.textInput} 
@@ -107,6 +139,9 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
         </View>
       </View>
 
+      <View style={styles.commentDataContainer}>
+        {renderComment()}
+      </View>
     </View>
   );
 }
@@ -209,7 +244,6 @@ const styles = StyleSheet.create({
   commentInputContainer: {
     width: '100%',
     flexDirection: 'row',
-    marginTop: 10,
     padding: 10,
     alignItems: 'center'
   },
@@ -229,5 +263,30 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     marginLeft: 10
+  },
+  commentDataContainer: {
+    width: '100%',
+    flexDirection: 'column',
+    marginTop: 10,
+    marginBottom: 10
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginBottom: 20
+  },
+  commentPfp: {
+    borderRadius: 30,
+    width: 30,
+    height: 30,
+    backgroundColor: '#c8d2d7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  commentDetails: {
+    flexGrow: 1,
+    marginLeft: 5
   }
 });
