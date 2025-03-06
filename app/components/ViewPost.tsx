@@ -28,6 +28,8 @@ export default function ViewPost() {
           <ViewVideo
             key={idx} 
             videoSource={media.url}
+            selectedPost={selectedPost}
+            currentPage={currentPage}
             idx={idx}
           />
           <Metrics selectedPost={selectedPost}/>
@@ -52,10 +54,10 @@ export default function ViewPost() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Pressable style={styles.navContainer} onPress={() => router.back()}>
+      {/* <Pressable style={styles.navContainer} onPress={() => router.back()}>
         <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="white" />
-      </Pressable>
-      <View style={styles.paginationContainer}>
+      </Pressable> */}
+        {/* <View style={styles.paginationContainer}>
           {selectedPost?.mediaUrls?.map((_: any, index: number) => (
             <View
               key={index}
@@ -65,7 +67,7 @@ export default function ViewPost() {
               ]}
             />
           ))}
-        </View>
+        </View> */}
       <PagerView 
         style={styles.pagerContainer} 
         initialPage={0}
