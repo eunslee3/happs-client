@@ -28,7 +28,7 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
     return `${years} year${years === 1 ? "" : "s"} ago`;
   };
   return (
-    <View style={styles.detailsContainer}>
+    <View style={styles.container}>
       <View style={styles.userInfoContainer}>
         <View style={styles.userInfo}>
           {user.profilePictureUrl ? 
@@ -42,25 +42,34 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
             </View>
           }
           <View style={styles.userTextInfo}>
-            <Text>{user.username}</Text>
-            <Text>{timeAgo(post.createdAt)}</Text>
+            <Text style={{ fontSize: 14 }}>{user.username}</Text>
+            <Text style={{ color: '#9DA1A5', fontSize: 12 }}>{timeAgo(post.createdAt)}</Text>
           </View>
         </View>
-
+        <View style={styles.followBtnContainer}>
+          <Pressable style={styles.followBtn}>
+            <Text>Follow</Text>
+          </Pressable>
+        </View>
+      </View>
+      
+      <View>
+        <View></View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  detailsContainer: {
+  container: {
     flex: 1,
-    width: '100%'
+    width: '100%',
+    padding: 15
   },
   userInfoContainer: {
     width: '100%',
     height: 46,
-    margin: 10
+    flexDirection: 'row'
   },
   defaultProfilePicture: {
     borderRadius: 50,
@@ -74,12 +83,29 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '50%',
     alignItems: 'center',
-    borderWidth: 2,
     flexDirection: 'row'
   },
   userTextInfo: {
     height: '100%',
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginLeft: 10
+  },
+  followBtnContainer: {
+    width: '50%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  followBtn: {
+    height: 32,
+    width: 75,
+    backgroundColor: '#F4F6F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+  },
+  detailsContainer: {
+    width: '100%'
   }
 });

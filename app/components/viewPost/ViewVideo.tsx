@@ -15,8 +15,10 @@ export default function ViewVideo({ videoSource, idx }: { videoSource: any, idx:
         key={idx}
         style={styles.video}
         player={player}
-        allowsFullscreen
-        allowsPictureInPicture
+        allowsFullscreen={false}
+        allowsPictureInPicture={false}
+        allowsVideoFrameAnalysis={false}
+        contentFit={'cover'}
       />
     </View>
   );
@@ -25,8 +27,7 @@ export default function ViewVideo({ videoSource, idx }: { videoSource: any, idx:
 const styles = StyleSheet.create({
   videoContainer: {
     height: '100%',
-    width: '100%',
-    backgroundColor: '#1B1B1B'
+    width: '100%'
   },
   video: {
     height: '100%',
