@@ -1,14 +1,10 @@
-import { StyleSheet, View, Pressable, ScrollView, Text } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import PostDetail from './viewPost/PostDetails';
-import { BlurView } from 'expo-blur';
 import Metrics from './viewPost/Metrics';
 import ViewImage from './viewPost/ViewImage';
 

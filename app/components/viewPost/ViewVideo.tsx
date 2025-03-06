@@ -1,8 +1,8 @@
-import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+
 export default function ViewVideo(
   { videoSource, idx, selectedPost, currentPage }: 
   { videoSource: any, idx: number, selectedPost: any, currentPage: number }

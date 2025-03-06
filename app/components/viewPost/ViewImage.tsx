@@ -1,8 +1,8 @@
-import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+
 export default function ViewImage(
   { imageUrl, idx, selectedPost, currentPage }: 
   { imageUrl: string, idx: number, selectedPost: any, currentPage: number }
