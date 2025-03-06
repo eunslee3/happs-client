@@ -1,15 +1,15 @@
-import { StyleSheet, View, Pressable, Text } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native';
+import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import postStore from '@/store/postStore';
 
 export default function PostDetail({ user, post }: { user: any, post: any }) {
+  const [commentInput, setCommentInput] = useState('');
   console.log({
     post,
     user
   })
+
   const timeAgo = (timestamp: string | number | Date): string => {
     const now = new Date();
     const createdAt = new Date(timestamp);
@@ -27,6 +27,11 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
     const years = Math.floor(days / 365);
     return `${years} year${years === 1 ? "" : "s"} ago`;
   };
+
+  const handleTextChange = (text: any) => {
+    setCommentInput(text);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfoContainer}>
@@ -91,13 +96,15 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
         </View>
       </View>
 
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>
-          {post.title}
-        </Text>
-        <Text style={styles.description}>
-          {post.description}
-        </Text>
+      <View style={styles.commentInputContainer}>
+        <TextInput 
+          style={styles.textInput} 
+          placeholder="Type your comment"
+          onChangeText={(text) => {handleTextChange(text)}}
+        />
+        <View style={styles.sendContainer}>
+          <MaterialIcons name="send" size={24} color="white" />
+        </View>
       </View>
 
     </View>
@@ -106,9 +113,8 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     width: '100%',
-    height: 'auto',
     padding: 15
   },
   userInfoContainer: {
@@ -181,7 +187,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   tagsContainer: {
-    padding: 10,
     width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -192,7 +197,6 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingLeft: 10,
     paddingRight: 10,
-    // height: 25,
     width: 'auto',
     alignItems: 'center',
     justifyContent: 'center',
@@ -201,5 +205,29 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderWidth: 1,
     borderColor: '#CDCBCF'
+  },
+  commentInputContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    marginTop: 10,
+    padding: 10,
+    alignItems: 'center'
+  },
+  textInput: {
+    flexGrow: 1,
+    height: 55,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: '#DEDEDE',
+    paddingHorizontal: 30,
+  },
+  sendContainer: {
+    backgroundColor: '#00DCB7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 50,
+    height: 50,
+    width: 50,
+    marginLeft: 10
   }
 });
