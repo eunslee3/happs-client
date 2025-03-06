@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
-import { useRouter } from 'expo-router';
 import PostDetail from './viewPost/PostDetails';
 import Metrics from './viewPost/Metrics';
 import ViewImage from './viewPost/ViewImage';
@@ -11,9 +10,6 @@ import ViewImage from './viewPost/ViewImage';
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
-  const router = useRouter();
-
-  console.log('selected post', selectedPost)
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
