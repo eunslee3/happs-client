@@ -6,10 +6,14 @@ import ViewVideo from './viewPost/ViewVideo';
 import PostDetail from './viewPost/PostDetails';
 import Metrics from './viewPost/Metrics';
 import ViewImage from './viewPost/ViewImage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
+  const [likes, setLikes] = useState(selectedPost?.likes)
+  const queryClient = new QueryClient();
+  console.log('selectedPost', selectedPost);
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -24,7 +28,7 @@ export default function ViewPost() {
               currentPage={currentPage}
               idx={idx}
             />
-            <Metrics selectedPost={selectedPost} />
+            {/* <Metrics selectedPost={selectedPost} likes={likes} /> */}
           </View>
         );
       } else if (media.type === 'image') {
@@ -36,7 +40,7 @@ export default function ViewPost() {
               selectedPost={selectedPost}
               currentPage={currentPage}
             />
-            <Metrics selectedPost={selectedPost} />
+            {/* <Metrics selectedPost={selectedPost} likes={likes} /> */}
           </View>
         );
       }
@@ -45,18 +49,21 @@ export default function ViewPost() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.pagerWrapper}>
-        <PagerView 
-          style={styles.pagerContainer} 
-          initialPage={0}
-          onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
-        >
-          {selectedPost ? renderMedia() : null}
-        </PagerView>
-      </View>
-      <PostDetail user={selectedPost.user} post={selectedPost} />
-    </ScrollView>
+    <QueryClientProvider client={queryClient}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.pagerWrapper}>
+          <PagerView 
+            style={styles.pagerContainer} 
+            initialPage={0}
+            onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+          >
+            {selectedPost ? renderMedia() : null}
+          </PagerView>
+          <Metrics selectedPost={selectedPost} likes={likes} />
+        </View>
+        <PostDetail user={selectedPost.user} post={selectedPost} />
+      </ScrollView>
+    </QueryClientProvider>
   );
 }
 
