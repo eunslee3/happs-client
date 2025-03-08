@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, Image, StyleSheet, Platform, ScrollView, Text, Pressable } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Image, ScrollView, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect, useRef } from 'react';
 import { getAllPosts } from '@/api/posts/getAllPosts';
@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import uploadStore from '@/store/uploadStore';
 import { useQuery } from '@tanstack/react-query';
 import PostCard from '../components/feed/PostCard';
+// import { Image } from 'expo-image';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
@@ -51,7 +52,8 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView}>
           <View style={styles.headerContainer}>
             <View style={styles.headerRow}>
-              <Text style={styles.headerText}>happs</Text>
+              <Image style={{ objectFit: 'contain', width: 100, height: 50 }} source={require('../../assets/images/happs-cropped.png')}></Image>
+              {/* <Text style={styles.headerText}>Happs</Text> */}
               <Ionicons name="notifications-outline" size={24} color="black" />            
             </View>
             <View style={styles.headerRow}>

@@ -28,7 +28,7 @@ export default function Metrics({ selectedPost, likes }: { selectedPost: any, li
   const mutation = useMutation({
     mutationFn: () => likePost(user.id, selectedPost.id),
     onSuccess: () => {
-      console.log('Post liked successfully');
+      console.log('like api called successfully');
     },
     onError: (error) => {
       console.error('Failed to like post:', error);
@@ -62,7 +62,7 @@ export default function Metrics({ selectedPost, likes }: { selectedPost: any, li
       <BlurView intensity={100} style={styles.metrics}>
         <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
         <Text style={styles.metricsText}>
-          {numberOfInteractions(amtOfLikes)}
+          {numberOfInteractions(selectedPost.Comment.length)}
         </Text>
       </BlurView>
     </Pressable>

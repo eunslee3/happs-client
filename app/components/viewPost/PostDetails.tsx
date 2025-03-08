@@ -2,9 +2,27 @@ import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
+import { useMutation } from '@tanstack/react-query';
+import { addComment } from '@/api/posts/addComment';
 
 export default function PostDetail({ user, post }: { user: any, post: any }) {
   const [commentInput, setCommentInput] = useState('');
+  const [comments, setComments] = useState(post?.Comment || []);
+  const mutation = useMutation({
+    mutationFn: () => addComment(user.id, post.id, commentInput),
+    onSuccess: (response) => {
+      setComments((prevState: any) => [response.data, ...prevState])
+      setCommentInput('');
+    },
+    onError: (error: any) => {
+      console.error('Failed to add comment', error);
+    },
+  })
+  console.log('comment', commentInput)
+
+  const handleAddComment = () => {
+    mutation.mutate();
+  }
 
   const timeAgo = (timestamp: string | number | Date): string => {
     const now = new Date();
@@ -25,9 +43,9 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
   };
 
   const renderComment = () => {
-    return post.Comment?.map((comment: any, idx: number) => {
+    return comments.map((comment: any, idx: number) => {
       const { content, user, createdAt } = comment || {};
-      let pfpSource = user.profilePictureUrl;
+      let pfpSource = user?.profilePictureUrl;
       return (
         <View
           key={idx}
@@ -133,10 +151,11 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
           style={styles.textInput} 
           placeholder="Type your comment"
           onChangeText={(text) => {handleTextChange(text)}}
+          value={commentInput}
         />
-        <View style={styles.sendContainer}>
+        <Pressable onPress={() => handleAddComment()} style={styles.sendContainer}>
           <MaterialIcons name="send" size={24} color="white" />
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.commentDataContainer}>
@@ -248,7 +267,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   textInput: {
-    flexGrow: 1,
+    flex: 1,
     height: 55,
     borderRadius: 30,
     borderWidth: 1,

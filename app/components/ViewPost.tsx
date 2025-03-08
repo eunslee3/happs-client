@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useState } from 'react';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
@@ -50,6 +50,10 @@ export default function ViewPost() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        style={{ flex: 1 }}
+      >
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.pagerWrapper}>
           <PagerView 
@@ -63,6 +67,7 @@ export default function ViewPost() {
         </View>
         <PostDetail user={selectedPost.user} post={selectedPost} />
       </ScrollView>
+      </KeyboardAvoidingView>
     </QueryClientProvider>
   );
 }
