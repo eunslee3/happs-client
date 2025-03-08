@@ -27,7 +27,6 @@ export default function ViewPost() {
               currentPage={currentPage}
               idx={idx}
             />
-            {/* <Metrics selectedPost={selectedPost} likes={likes} /> */}
           </View>
         );
       } else if (media.type === 'image') {
@@ -39,7 +38,6 @@ export default function ViewPost() {
               selectedPost={selectedPost}
               currentPage={currentPage}
             />
-            {/* <Metrics selectedPost={selectedPost} likes={likes} /> */}
           </View>
         );
       }
