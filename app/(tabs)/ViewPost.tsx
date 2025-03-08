@@ -23,20 +23,22 @@ export default function ViewPost() {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState<number>(selectedPost.likes || 0);
 
+  // Immediately update UI and fire mutation
   const handleLikePost = () => {
     setIsLiked(!isLiked);
     setLikes(isLiked ? likes - 1 : likes + 1);
     mutation.mutate();
   }
 
+  // Custom tap event handler - like/unlike a post
   const handleTap = () => {
     tapCount.current += 1;
-
     if (tapCount.current === 2) {
       handleLikePost();
       tapCount.current = 0; // Reset tap count
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     } else {
+      // Set tapCount back to 0 if user taps once and timeout is fulfilled
       timeoutRef.current = setTimeout(() => {
         console.log('Single tap')
         tapCount.current = 0;
@@ -46,20 +48,16 @@ export default function ViewPost() {
 
   const mutation = useMutation({
     mutationFn: () => likePost(user.id, selectedPost.id),
-    onSuccess: () => {
-      console.log('like api called successfully');
-    },
     onError: (error) => {
       console.error('Failed to like post:', error);
     },
   });
 
+  // On first render, determine if user has liked the post or not - update UI accordingly
   useEffect(() => {
     const didUserLike = selectedPost.like.some((el: any) => el.userId === user.id);
     setIsLiked(didUserLike);
   }, [])
-
-  console.log(tapCount)
 
   const renderMedia = () => {
     return selectedPost.mediaUrls.map((media: any, idx: number) => {

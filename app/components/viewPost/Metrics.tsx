@@ -1,9 +1,7 @@
-import { StyleSheet, View, Pressable, ScrollView, Text } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import userStore from '@/store/userStore';
 
 export default function Metrics(
   { selectedPost, 
