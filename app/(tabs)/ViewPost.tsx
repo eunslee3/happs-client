@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { likePost } from '@/api/posts/likePost';
 import userStore from '@/store/userStore';
+import { useRouter } from 'expo-router';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
@@ -21,7 +22,14 @@ export default function ViewPost() {
   const tapCount = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState<number>(selectedPost.likes || 0);
+  const [likes, setLikes] = useState<number>(0);
+  const router = useRouter();
+
+  const handleRouterBack = () => {
+    setIsLiked(false);
+    setLikes(0);
+    router.back();
+  }
 
   // Immediately update UI and fire mutation
   const handleLikePost = () => {
@@ -53,11 +61,14 @@ export default function ViewPost() {
     },
   });
 
+  console.log(selectedPost)
+
   // On first render, determine if user has liked the post or not - update UI accordingly
   useEffect(() => {
     const didUserLike = selectedPost.like.some((el: any) => el.userId === user.id);
     setIsLiked(didUserLike);
-  }, [])
+    setLikes(selectedPost.likes)
+  }, [selectedPost])
 
   const renderMedia = () => {
     return selectedPost.mediaUrls.map((media: any, idx: number) => {
