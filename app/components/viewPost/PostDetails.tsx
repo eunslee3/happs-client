@@ -18,12 +18,14 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
       console.error('Failed to add comment', error);
     },
   })
-  console.log('comment', commentInput)
 
+  // Handler for submitting comment
   const handleAddComment = () => {
+    if (commentInput.length < 1) return;
     mutation.mutate();
   }
 
+  // Sets the time stamp for post and comments
   const timeAgo = (timestamp: string | number | Date): string => {
     const now = new Date();
     const createdAt = new Date(timestamp);
