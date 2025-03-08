@@ -6,7 +6,7 @@ export const addComment = async (userId: string, postId: string, content: string
       userId,
       content
     });
-    console.log('comment: ', JSON.stringify(response));
+
     return response;
   } catch (err: any) {
     console.log(err.message);
