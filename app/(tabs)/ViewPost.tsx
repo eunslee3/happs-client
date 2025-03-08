@@ -62,7 +62,7 @@ export default function ViewPost() {
   const renderMedia = () => {
     return selectedPost.mediaUrls.map((media: any, idx: number) => {
       return (
-        <View style={styles.mediaContainer}>
+        <View key={idx} style={styles.mediaContainer}>
           {media.type === 'video' ? (
             <ViewVideo 
               key={idx} 

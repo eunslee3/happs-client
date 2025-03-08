@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useState } from 'react';
 import userStore from '@/store/userStore';
+import ProfileGallery from '../components/ProfileGallery';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('All');
@@ -28,8 +29,7 @@ export default function Profile() {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.headerRow}>
-          <Text style={styles.headerText}>happs</Text>
-          <Image source={require('../../assets/images/gear.png')}/>            
+          <Image style={{ objectFit: 'contain', width: 100, height: 50 }} source={require('../../assets/images/happs-cropped.png')} />
         </View>
       </View>
       <View style={styles.userInfoContainer}>
@@ -95,7 +95,7 @@ export default function Profile() {
           </View>
         </View>
         <View style={styles.contentPreviewContainer}>
-          <Text>No Content</Text>
+          <ProfileGallery user={user}/>
         </View>
       </View>
     </SafeAreaView>
