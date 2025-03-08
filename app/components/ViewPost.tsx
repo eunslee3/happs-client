@@ -11,7 +11,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
-  const [likes, setLikes] = useState(selectedPost?.likes)
   const queryClient = new QueryClient();
   console.log('selectedPost', selectedPost);
 
@@ -63,7 +62,7 @@ export default function ViewPost() {
           >
             {selectedPost ? renderMedia() : null}
           </PagerView>
-          <Metrics selectedPost={selectedPost} likes={likes} />
+          <Metrics selectedPost={selectedPost} likes={selectedPost?.likes} />
         </View>
         <PostDetail user={selectedPost.user} post={selectedPost} />
       </ScrollView>

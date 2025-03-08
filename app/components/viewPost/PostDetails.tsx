@@ -14,6 +14,7 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
     onSuccess: (response) => {
       setComments((prevState: any) => [response.data, ...prevState])
       setCommentInput('');
+      console.log('Comment: ', response.data.message)
     },
     onError: (error: any) => {
       console.error('Failed to add comment', error);
