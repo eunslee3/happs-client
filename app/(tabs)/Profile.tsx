@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -27,6 +27,7 @@ export default function Profile() {
   }
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       <View style={styles.headerContainer}>
         <View style={styles.headerRow}>
           <Image style={{ objectFit: 'contain', width: 100, height: 50 }} source={require('../../assets/images/happs-cropped.png')} />
@@ -98,6 +99,7 @@ export default function Profile() {
           <ProfileGallery user={user}/>
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -200,7 +202,6 @@ const styles = StyleSheet.create({
   },
   contentPreviewContainer: {
     width: '100%',
-    height: 140,
     // borderWidth: 1,
     // marginLeft: 10,
     marginTop: 20,

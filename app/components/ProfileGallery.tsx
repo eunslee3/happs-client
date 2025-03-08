@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, Animated  } from 'react-native';
+import { View, StyleSheet  } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { getUserPosts } from '@/api/posts/getUserPosts';
+import ProfileGalleryItem from './profileGallery/ProfileGalleryItem';
 
 export default function ProfileGallery({
   user
@@ -16,20 +16,28 @@ export default function ProfileGallery({
     refetchOnWindowFocus: false
   })
 
-  console.log('user: ', user)
-  console.log('userPosts: ', postsData)
+  const renderProfileGalleryItems = () => {
+    return postsData?.map((item: any, idx: number) => {
+      return (
+        <ProfileGalleryItem key={idx} item={item} />
+      )
+    })
+  }
 
   return (
     <View style={styles.container}>
-
+      {renderProfileGalleryItems()}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    // flexGrow: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   }
 });
