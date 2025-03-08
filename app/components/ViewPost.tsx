@@ -1,5 +1,5 @@
-import { StyleSheet, ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, ScrollView, View, KeyboardAvoidingView, Platform, findNodeHandle } from 'react-native';
+import React, { useState, useRef, useCallback } from 'react';
 import postStore from '@/store/postStore';
 import PagerView from 'react-native-pager-view';
 import ViewVideo from './viewPost/ViewVideo';
@@ -7,12 +7,14 @@ import PostDetail from './viewPost/PostDetails';
 import Metrics from './viewPost/Metrics';
 import ViewImage from './viewPost/ViewImage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function ViewPost() {
   const { selectedPost } = postStore();
   const [currentPage, setCurrentPage] = useState(0);
   const queryClient = new QueryClient();
-  console.log('selectedPost', selectedPost);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const commentRef = useRef<View>(null)
 
   const renderMedia = () => {
     const allMedia = selectedPost.mediaUrls;
@@ -45,25 +47,32 @@ export default function ViewPost() {
     });
   };
 
+  const scrollToTarget = () => {
+    commentRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      scrollViewRef.current?.scrollTo({ y: pageY, animated: true });
+    });
+  };
   return (
     <QueryClientProvider client={queryClient}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
         style={{ flex: 1 }}
       >
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.pagerWrapper}>
-          <PagerView 
-            style={styles.pagerContainer} 
-            initialPage={0}
-            onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
-          >
-            {selectedPost ? renderMedia() : null}
-          </PagerView>
-          <Metrics selectedPost={selectedPost} likes={selectedPost?.likes} />
-        </View>
-        <PostDetail user={selectedPost.user} post={selectedPost} />
-      </ScrollView>
+      <GestureHandlerRootView style={styles.container}>
+        <ScrollView ref={scrollViewRef} contentContainerStyle={styles.container}>
+          <View style={styles.pagerWrapper}>
+            <PagerView 
+              style={styles.pagerContainer} 
+              initialPage={0}
+              onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+            >
+              {selectedPost ? renderMedia() : null}
+            </PagerView>
+            <Metrics selectedPost={selectedPost} likes={selectedPost?.likes} scrollToTarget={scrollToTarget} />
+          </View>
+          <PostDetail user={selectedPost.user} post={selectedPost} commentRef={commentRef} />
+        </ScrollView>
+      </GestureHandlerRootView>
       </KeyboardAvoidingView>
     </QueryClientProvider>
   );
@@ -85,5 +94,13 @@ const styles = StyleSheet.create({
   mediaContainer: {
     width: "100%",
     height: "100%",
+  },
+  bottomSheet: {
+    flex: 1,
+    zIndex: 10000,
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2
   }
 });

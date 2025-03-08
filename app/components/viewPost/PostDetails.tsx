@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useMutation } from '@tanstack/react-query';
 import { addComment } from '@/api/posts/addComment';
 
-export default function PostDetail({ user, post }: { user: any, post: any }) {
+export default function PostDetail({ user, post, commentRef }: { user: any, post: any, commentRef: any }) {
   const [commentInput, setCommentInput] = useState('');
   const [comments, setComments] = useState(post?.Comment || []);
 
@@ -67,7 +67,7 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
               source={require('../../../assets/images/Default_pfp.jpg')} 
             />
           }
-          <View style={styles.commentDetails}>
+          <View ref={commentRef} style={styles.commentDetails}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ color: '#7E8184' }}>{user.username}</Text>
               <Text style={{ color: '#7E8184', marginLeft: 7 }}>{timeAgo(createdAt)}</Text>

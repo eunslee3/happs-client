@@ -7,7 +7,7 @@ import { useMutation } from '@tanstack/react-query';
 import { likePost } from '@/api/posts/likePost';
 import userStore from '@/store/userStore';
 
-export default function Metrics({ selectedPost, likes }: { selectedPost: any, likes: number }) {
+export default function Metrics({ selectedPost, likes, scrollToTarget }: { selectedPost: any, likes: number, scrollToTarget: () => void }) {
   const { user } = userStore();
   const [isLiked, setIsLiked] = useState(false);
   const [amtOfLikes, setAmtOfLikes] = useState(likes);
@@ -58,7 +58,7 @@ export default function Metrics({ selectedPost, likes }: { selectedPost: any, li
           </Text>
       </BlurView>
     </Pressable>
-    <Pressable style={styles.blurContainer}>
+    <Pressable onPress={() => scrollToTarget()} style={styles.blurContainer}>
       <BlurView intensity={100} style={styles.metrics}>
         <MaterialCommunityIcons name="comment-processing" size={17} color="white" />
         <Text style={styles.metricsText}>
