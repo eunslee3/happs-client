@@ -7,7 +7,7 @@ export const getThumbnails = async (fileKey: string) => {
         videoKey: fileKey
       }
     });
-    console.log('response for thumbnail: ' + response)
+
     return response;
   } catch (err: any) {
     console.log(err.message);

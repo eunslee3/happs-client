@@ -31,7 +31,6 @@ export const createPost = async (
       mediaUrls: formattedUrls,
       fileKeys: fileKeys
     });
-    // console.log('got posts: ', response)
     return response;
   } catch (err: any) {
     console.log(err.message);
