@@ -57,7 +57,14 @@ export default function TabLayout() {
               source={require('../../assets/images/profile.png')}
               style={{ width: 24, height: 24, tintColor: color }}
             />
-          ),        
+          ) 
+        }}
+      />
+      <Tabs.Screen
+        name="ViewPost"
+        options={{
+          title: 'View Post',
+          href: null
         }}
       />
     </Tabs>

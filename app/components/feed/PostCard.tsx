@@ -40,7 +40,7 @@ export default function PostCard({ post }: { post: any }) {
   const handleNavigation = () => {
     setSelectedPost(post)
     router.push({
-      pathname: '../../components/ViewPost',
+      pathname: '../../(tabs)/ViewPost',
     })
   }
 

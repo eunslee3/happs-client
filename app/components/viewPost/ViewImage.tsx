@@ -4,8 +4,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 
 export default function ViewImage(
-  { imageUrl, idx, selectedPost, currentPage }: 
-  { imageUrl: string, idx: number, selectedPost: any, currentPage: number }
+  { imageUrl, idx, selectedPost, currentPage, handleTap }: 
+  { imageUrl: string, idx: number, selectedPost: any, currentPage: number, handleTap: () => void }
 ) {
   const router = useRouter();
 
@@ -25,12 +25,14 @@ export default function ViewImage(
             />
           ))}
         </View>
-        <Image
-          key={idx}
-          source={{ uri: imageUrl }}
-          style={styles.media}
-          contentFit='cover'
-        />
+        <Pressable style={styles.media} onPress={handleTap}>
+          <Image
+            key={idx}
+            source={{ uri: imageUrl }}
+            style={styles.media}
+            contentFit='cover'
+          />
+        </Pressable>
     </View>
   );
 }

@@ -2,11 +2,13 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+import React, { useState, useRef } from 'react';
 
 export default function ViewVideo(
-  { videoSource, idx, selectedPost, currentPage }: 
-  { videoSource: any, idx: number, selectedPost: any, currentPage: number }
+  { videoSource, idx, selectedPost, currentPage, handleTap }: 
+  { videoSource: any, idx: number, selectedPost: any, currentPage: number, handleTap: () => void }
 ) {
+
   const player = useVideoPlayer(videoSource, (player) => {
     if (player) {
       player.loop = true;
@@ -31,15 +33,17 @@ export default function ViewVideo(
             />
           ))}
         </View>
-        <VideoView
-          key={idx}
-          style={styles.video}
-          player={player}
-          allowsFullscreen={false}
-          allowsPictureInPicture={false}
-          allowsVideoFrameAnalysis={false}
-          contentFit={'cover'}
-        />
+        <Pressable style={styles.video} onPress={handleTap}>
+          <VideoView
+            key={idx}
+            style={styles.video}
+            player={player}
+            allowsFullscreen={false}
+            allowsPictureInPicture={false}
+            allowsVideoFrameAnalysis={false}
+            contentFit={'cover'}
+          />
+        </Pressable>
       </View>
     </View>
   );
