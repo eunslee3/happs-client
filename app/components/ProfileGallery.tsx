@@ -33,9 +33,6 @@ export default function ProfileGallery({
 
 const styles = StyleSheet.create({
   container: {
-    // flexGrow: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
     width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',

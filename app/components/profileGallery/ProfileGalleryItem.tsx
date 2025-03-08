@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import postStore from '@/store/postStore';
 
-interface AlbumEntryProps {
-  uri: any;  // Typing the album prop here
-  callBack?: any;
-  mediaType?: string;
-  item?: any;
-}
+const windowWidth = Dimensions.get('window').width;
+const itemHeight = (windowWidth * 0.33) * 1.5
 
 export default function ProfileGalleryItem ({ item }: { item: any}) {
   const thumbnail = item?.mediaUrls?.[0].thumbnailUrl ? item?.mediaUrls?.[0].thumbnailUrl : item?.mediaUrls?.[0].url;
@@ -28,7 +24,7 @@ export default function ProfileGalleryItem ({ item }: { item: any}) {
 const styles = StyleSheet.create({
   imageContainer: {
     width: '33%',
-    height: 200,
+    height: itemHeight,
     borderWidth: 1,
     borderColor: 'white'
   },
