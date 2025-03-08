@@ -8,6 +8,7 @@ import { addComment } from '@/api/posts/addComment';
 export default function PostDetail({ user, post }: { user: any, post: any }) {
   const [commentInput, setCommentInput] = useState('');
   const [comments, setComments] = useState(post?.Comment || []);
+
   const mutation = useMutation({
     mutationFn: () => addComment(user.id, post.id, commentInput),
     onSuccess: (response) => {
@@ -44,6 +45,7 @@ export default function PostDetail({ user, post }: { user: any, post: any }) {
     return `${years} year${years === 1 ? "" : "s"}`;
   };
 
+  // Synchronous function to format all comments into a view
   const renderComment = () => {
     return comments.map((comment: any, idx: number) => {
       const { content, user, createdAt } = comment || {};
