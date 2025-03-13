@@ -1,7 +1,7 @@
 import { View, StyleSheet  } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { getUserPosts } from '@/api/posts/getUserPosts';
-import ProfileGalleryItem from './profileGallery/ProfileGalleryItem';
+import ProfileGalleryItem from './profile/ProfileGalleryItem';
 
 export default function ProfileGallery({
   user

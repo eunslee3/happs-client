@@ -20,7 +20,7 @@ export default function TabLayout() {
         tabBarStyle: {
           alignItems: 'center',
           borderWidth: 1
-        },
+        }
       }}>
       <Tabs.Screen
         name="Home"
@@ -32,7 +32,8 @@ export default function TabLayout() {
               style={{ width: 24, height: 24, tintColor: color }}
             />
           ),
-          headerShown: false
+          headerShown: false,
+          backBehavior: 'none'
         }}
       />
       <Tabs.Screen

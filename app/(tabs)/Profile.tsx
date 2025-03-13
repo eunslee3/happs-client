@@ -1,14 +1,19 @@
-import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useState } from 'react';
 import userStore from '@/store/userStore';
 import ProfileGallery from '../components/ProfileGallery';
+import { useRouter } from 'expo-router';
+import assetsStore from '@/store/assetStore';
+import UploadModal from '../components/profile/UploadModal';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('All');
   const { user } = userStore();
+  const router = useRouter();
+  const { selectedAsset, clearSelectedAsset } = assetsStore();
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -25,8 +30,18 @@ export default function Profile() {
         setActiveTab('All');
     }
   }
+
+  const handleNavigate = () => {
+    router.push('../components/PhotoGallery')
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <Modal
+        transparent={true}
+      >
+        <UploadModal selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset}/>
+      </Modal>
       <ScrollView>
       <View style={styles.headerContainer}>
         <View style={styles.headerRow}>
@@ -36,7 +51,7 @@ export default function Profile() {
       <View style={styles.userInfoContainer}>
         <View style={styles.pfpAndNameContainer}>
           {/* Add press event here to upload or edit a pfp */}
-          <Pressable> 
+          <Pressable onPress={handleNavigate}> 
             {user.profilePictureUrl ? 
               <Image source={user.profilePictureUrl} /> 
               : 

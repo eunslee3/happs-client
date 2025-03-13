@@ -16,12 +16,11 @@ import { createPost } from '@/api/posts/createPost';
 import { getThumbnails } from '@/api/posts/getThumbnails';
 import Toast from 'react-native-toast-message';
 import { useQueryClient } from '@tanstack/react-query'
-
 export default function CreatePost() {
   const router = useRouter();
-  const assets = assetsStore((state: any) => state.assets);
-  const { clearAssets } = assetsStore();
-  const { selectedAsset } = useLocalSearchParams<{ selectedAsset: any }>();
+  // const assets = assetsStore((state: any) => state.assets);
+  const { assets, selectedAsset } = assetsStore();
+  const { clearAssets, clearSelectedAsset } = assetsStore();
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -114,6 +113,7 @@ export default function CreatePost() {
       })
       setIsUploading(false);
       clearAssets();
+      clearSelectedAsset();
       await queryClient.invalidateQueries({ queryKey: ['posts'] })
       Toast.show({
         text1: 'Post created successfully!',
@@ -168,10 +168,10 @@ export default function CreatePost() {
   // Prevents the user from uploading more than 10 assets at one time
   useEffect(() => {
     if (selectedAsset && assets.length < 10) {
-      const parsedAssets = JSON.parse(selectedAsset);
-      assetsStore.getState().setAssets([...assetsStore.getState().assets, parsedAssets]);
+      console.log('selectedAsset: ', selectedAsset)
+      assetsStore.getState().setAssets([...assetsStore.getState().assets, selectedAsset]);
     }
-  }, [selectedAsset])
+  }, [])
 
   const handleBackButton = () => {
     router.back();
@@ -242,8 +242,8 @@ export default function CreatePost() {
   const handleSubmit = async () => {
     try {
       const fileObjs = await Promise.all(assets.map((asset: any) => convertPhUriToFile(asset.uri, asset.id)));
-      uploadFilesMutation.mutate(fileObjs)
-      router.navigate('/Home')
+      uploadFilesMutation.mutate(fileObjs);
+      router.navigate('/Home');
     } catch (err) {
       console.error('Error submitting post', err);
     }
@@ -268,7 +268,7 @@ export default function CreatePost() {
 
         {assets.length < 1 ? 
           <View style={styles.defaultAddAssetContainer}>
-            <Pressable style={styles.defaultAddAsset} onPress={() => router.push('../components/PhotoGallery')}>
+            <Pressable style={styles.defaultAddAsset} onPress={() => router.push({ pathname: '../components/PhotoGallery', params: { path: 'CreatePost' }})}>
               <RNImage source={require('../../assets/images/create-post-camera.png')} />
               <Text style={{ fontSize: 14, marginVertical: 5 }}>Add More</Text>
               <Text style={{ color: '#7E8184' }}>{`0/10`}</Text>

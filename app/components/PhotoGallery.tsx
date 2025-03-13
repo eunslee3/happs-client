@@ -5,13 +5,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import GalleryItem from './GalleryItem';
 import PreviewAsset from './PreviewAsset';
+import assetsStore from '@/store/assetStore';
+import { useLocalSearchParams } from 'expo-router';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 export default function PhotoGallery() {
   const [assets, setAssets] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null); // Store after token
-  const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [showPreview, setShowPreview] = useState<boolean>(true);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const screenWidth = Dimensions.get('window').width;
@@ -22,6 +23,8 @@ export default function PhotoGallery() {
   const heightBeforeScroll = screenHeight * 0.5;
   const heightAfterScroll = 0;
   const playerRef = useRef<any>(null); // To directly control the player
+  const { setSelectedAsset, selectedAsset } = assetsStore();
+  const { path } = useLocalSearchParams();
 
   const handleNavigate = () => {
     // Video continues to play after navigation. Have to manually pause it.
@@ -29,12 +32,17 @@ export default function PhotoGallery() {
     if (player) {
       player.pause();
     }
-    router.push({
-      pathname: '../(tabs)/CreatePost',
-      params: {
-        selectedAsset: JSON.stringify(selectedAsset)
-      }
-    })
+
+    if (path === 'CreatePost') {
+      router.push({
+        pathname: '../(tabs)/CreatePost',
+      })
+    }
+    if (path === 'Profile') {
+      router.push({
+        pathname: '../(tabs)/Profile'
+      })
+    }
   }
 
   const fetchMoreAssets = async () => {
