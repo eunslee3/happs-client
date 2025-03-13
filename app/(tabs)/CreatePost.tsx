@@ -168,14 +168,14 @@ export default function CreatePost() {
   // Prevents the user from uploading more than 10 assets at one time
   useEffect(() => {
     if (selectedAsset && assets.length < 10) {
-      console.log('selectedAsset: ', selectedAsset)
       assetsStore.getState().setAssets([...assetsStore.getState().assets, selectedAsset]);
     }
   }, [])
 
   const handleBackButton = () => {
     router.back();
-    assetsStore.getState().clearAssets()
+    clearAssets();
+    clearSelectedAsset();
   }
 
   // Handles the delete functionality of an asset

@@ -2,18 +2,21 @@ import { StyleSheet, View, Text, Pressable, ScrollView, Modal } from 'react-nati
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import userStore from '@/store/userStore';
 import ProfileGallery from '../components/ProfileGallery';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname  } from 'expo-router';
 import assetsStore from '@/store/assetStore';
 import UploadModal from '../components/profile/UploadModal';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('All');
+  const [show, setShow] = useState(false);
   const { user } = userStore();
   const router = useRouter();
+  const pathname = usePathname();
   const { selectedAsset, clearSelectedAsset } = assetsStore();
+  console.log('selected asset', pathname)
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -35,10 +38,17 @@ export default function Profile() {
     router.push('../components/PhotoGallery')
   }
 
+  useEffect(() => {
+    if (selectedAsset?.id && pathname === '/Profile') {
+      setShow(true);
+    }
+  }, [selectedAsset])
+
   return (
     <SafeAreaView style={styles.container}>
       <Modal
         transparent={true}
+        visible={!!selectedAsset?.id}
       >
         <UploadModal selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset}/>
       </Modal>
