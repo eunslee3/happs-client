@@ -67,7 +67,6 @@ export default function UploadModal (
   const uploadToS3 = async (asset: any, presignedUrl: any) => {
     try {
       const fileObj = await convertPhUriToFile(asset.uri, asset.id);
-      console.log('fileObj ', fileObj);
       const response = await FileSystem.uploadAsync(presignedUrl, fileObj.localUri, {
         httpMethod: 'PUT',
         headers: { 'Content-Type': fileObj.fileType },
@@ -86,11 +85,10 @@ export default function UploadModal (
         const presignedObj = await getPresignedUrl(file.filename, file.mediaType);
         const formattedUrl = await uploadToS3(file, presignedObj.presignedUrl);
     
-        return { formattedUrl, fileKey: presignedObj.fileKey };
+        return { formattedUrl };
       },
-      onSuccess: async ({ formattedUrl, fileKey }) => {
-        console.log('success', formattedUrl, fileKey)
-  
+      onSuccess: async ({ formattedUrl }) => {
+
         await updateUserInfoApi({ id: user.id, profilePictureUrl: formattedUrl });
         setUser({
           ...user,

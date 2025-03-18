@@ -16,7 +16,6 @@ export default function Profile() {
   const router = useRouter();
   const pathname = usePathname();
   const { selectedAsset, clearSelectedAsset } = assetsStore();
-  console.log('user', user)
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -80,7 +79,8 @@ export default function Profile() {
                   style={styles.addProfilePictureButton} 
                   name="pluscircle" 
                   size={24} 
-                  color="black" 
+                  color="black"
+                  backgroundColor="white"
                 />
               </View>
           </Pressable>
@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     bottom: -2,
     right: 0,
+    borderRadius: 50
   },
   nameContainer: {
     flexDirection: 'column',

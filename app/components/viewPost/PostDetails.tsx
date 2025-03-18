@@ -1,5 +1,5 @@
 import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useMutation } from '@tanstack/react-query';
@@ -14,7 +14,6 @@ export default function PostDetail({ user, post, commentRef }: { user: any, post
     onSuccess: (response) => {
       setComments((prevState: any) => [response.data, ...prevState])
       setCommentInput('');
-      console.log('Comment: ', response.data.message)
     },
     onError: (error: any) => {
       console.error('Failed to add comment', error);
@@ -83,19 +82,24 @@ export default function PostDetail({ user, post, commentRef }: { user: any, post
     setCommentInput(text);
   };
 
+  useEffect(() => {
+    setComments(post?.Comment);
+  }, [post]);
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfoContainer}>
         <View style={styles.userInfo}>
           {user.profilePictureUrl ? 
-            <Image source={user.profilePictureUrl} /> 
-            : 
-            <View style={styles.defaultProfilePicture}>
-              <Image 
-                style={styles.defaultProfilePicture} 
-                source={require('../../../assets/images/Default_pfp.jpg')} 
-              />
-            </View>
+            <Image
+              style={styles.defaultProfilePicture} 
+              source={{ uri: user.profilePictureUrl }} 
+            /> 
+            :
+            <Image 
+              style={styles.defaultProfilePicture} 
+              source={require('../../../assets/images/Default_pfp.jpg')} 
+            />
           }
           <View style={styles.userTextInfo}>
             <Text style={{ fontSize: 14 }}>{user.username}</Text>
@@ -164,7 +168,7 @@ export default function PostDetail({ user, post, commentRef }: { user: any, post
       </View>
 
       <View style={styles.commentDataContainer}>
-        {renderComment()}
+        {comments && renderComment()}
       </View>
     </View>
   );

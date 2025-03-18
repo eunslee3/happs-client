@@ -5,7 +5,7 @@ interface UserInfoProps {
   username?: string;
   firstName?: string;
   lastName?: string;
-  profilePictureUrl: string;
+  profilePictureUrl?: string;
 }
 
 export const updateUserInfoApi = async (userInfo: UserInfoProps) => {

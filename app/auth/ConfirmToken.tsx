@@ -28,7 +28,6 @@ export default function ConfirmToken() {
   const sendOtp = async () => {
     try {
       const response = await sendOtpApi(id, email);
-      console.log(response)
       if (response.status === 200) {
         console.log('OTP sent successfully');
 

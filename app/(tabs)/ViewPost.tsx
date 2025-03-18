@@ -48,7 +48,6 @@ export default function ViewPost() {
     } else {
       // Set tapCount back to 0 if user taps once and timeout is fulfilled
       timeoutRef.current = setTimeout(() => {
-        console.log('Single tap')
         tapCount.current = 0;
       }, 300);
     }
@@ -60,8 +59,6 @@ export default function ViewPost() {
       console.error('Failed to like post:', error);
     },
   });
-
-  console.log(selectedPost)
 
   // On first render, determine if user has liked the post or not - update UI accordingly
   useEffect(() => {
