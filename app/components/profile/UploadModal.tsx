@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { getPresignedUrlApi } from '@/api/posts/getPresignedUrlApi';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
+import userStore from '@/store/userStore';
 
 const windowWidth = Dimensions.get('window').width;
 const itemHeight = (windowWidth * 0.50) * 1.5
@@ -22,6 +23,7 @@ export default function UploadModal (
     setShow: (show: boolean) => void
   }
 ) {
+  const { user } = userStore();
 
   async function convertPhUriToFile(uri: string, assetId?: string) {
     try {
@@ -89,7 +91,7 @@ export default function UploadModal (
       onSuccess: async ({ formattedUrl, fileKey }) => {
         console.log('success', formattedUrl, fileKey)
   
-        // await createPost(user.id, form, formattedUrls, fileKeys);
+        await updateUserInfoApi({ id: user.id, profilePictureUrl: formattedUrl });
         // clearSelectedAsset();
       },
       onError: (err) => {

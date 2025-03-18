@@ -2,9 +2,10 @@ import { instance } from '../axiosInstance';
 
 interface UserInfoProps {
   id: string | string[];
-  username: string;
-  firstName: string;
-  lastName: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  profilePictureUrl: string;
 }
 
 export const updateUserInfoApi = async (userInfo: UserInfoProps) => {
