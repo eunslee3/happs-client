@@ -71,17 +71,29 @@ export default function PhotoGallery() {
 
   useEffect(() => {
     async function getAssets() {
+      let fetchedAssets
       if (permissionResponse?.status !== 'granted') {
         await requestPermission();
       }
-      // Get all assets (images and videos) from the media library
-      const fetchedAssets = await MediaLibrary.getAssetsAsync({
-        mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video], // Fetch both photos and videos
-        first: 100  // You can adjust this value to get more or fewer assets
-      });
-      setAfter(fetchedAssets.endCursor);
-      setAssets(fetchedAssets.assets);
-      await setSelectedAsset(fetchedAssets.assets[0]);
+
+      if (path === 'Profile') {
+        fetchedAssets = await MediaLibrary.getAssetsAsync({
+          mediaType: [MediaLibrary.MediaType.photo], // Fetch both photos and videos
+          first: 100  // You can adjust this value to get more or fewer assets
+        });
+      } else {
+        await MediaLibrary.getAssetsAsync({
+          mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video], // Fetch both photos and videos
+          first: 100  // You can adjust this value to get more or fewer assets
+        });
+      }
+
+      if (fetchedAssets) {
+        // Get all assets (images and videos) from the media library
+        setAfter(fetchedAssets.endCursor);
+        setAssets(fetchedAssets.assets);
+        await setSelectedAsset(fetchedAssets.assets[0]);
+      }
     }
     
     getAssets();

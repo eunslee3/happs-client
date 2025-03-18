@@ -17,6 +17,7 @@ export default function Profile() {
   const pathname = usePathname();
   const { selectedAsset, clearSelectedAsset } = assetsStore();
   console.log('selected asset', pathname)
+  console.log('selected asset', selectedAsset)
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -35,22 +36,24 @@ export default function Profile() {
   }
 
   const handleNavigate = () => {
-    router.push('../components/PhotoGallery')
+    router.push({ pathname: '../components/PhotoGallery', params: {
+      path: 'Profile'
+    }})
   }
 
   useEffect(() => {
     if (selectedAsset?.id && pathname === '/Profile') {
       setShow(true);
     }
-  }, [selectedAsset])
+  }, [selectedAsset, pathname])
 
   return (
     <SafeAreaView style={styles.container}>
       <Modal
         transparent={true}
-        visible={!!selectedAsset?.id}
+        visible={show}
       >
-        <UploadModal selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset}/>
+        <UploadModal selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset} setShow={setShow}/>
       </Modal>
       <ScrollView>
       <View style={styles.headerContainer}>
