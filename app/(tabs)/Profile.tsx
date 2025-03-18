@@ -16,8 +16,7 @@ export default function Profile() {
   const router = useRouter();
   const pathname = usePathname();
   const { selectedAsset, clearSelectedAsset } = assetsStore();
-  console.log('selected asset', pathname)
-  console.log('selected asset', selectedAsset)
+  console.log('user', user)
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -65,14 +64,18 @@ export default function Profile() {
         <View style={styles.pfpAndNameContainer}>
           {/* Add press event here to upload or edit a pfp */}
           <Pressable onPress={handleNavigate}> 
-            {user.profilePictureUrl ? 
-              <Image source={user.profilePictureUrl} /> 
-              : 
               <View style={styles.defaultProfilePicture}>
-                <Image 
-                  style={styles.defaultProfilePicture} 
-                  source={require('../../assets/images/Default_pfp.jpg')} 
-                />
+                {user.profilePictureUrl ? 
+                  <Image
+                    style={styles.defaultProfilePicture} 
+                    source={{ uri: user.profilePictureUrl }} 
+                  /> 
+                  :
+                  <Image 
+                    style={styles.defaultProfilePicture} 
+                    source={require('../../assets/images/Default_pfp.jpg')} 
+                  />
+                }
                 <AntDesign 
                   style={styles.addProfilePictureButton} 
                   name="pluscircle" 
@@ -80,7 +83,6 @@ export default function Profile() {
                   color="black" 
                 />
               </View>
-            }
           </Pressable>
           <View style={styles.nameContainer}>
             <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName}</Text>

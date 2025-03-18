@@ -23,7 +23,7 @@ export default function UploadModal (
     setShow: (show: boolean) => void
   }
 ) {
-  const { user } = userStore();
+  const { user, setUser } = userStore();
 
   async function convertPhUriToFile(uri: string, assetId?: string) {
     try {
@@ -92,7 +92,12 @@ export default function UploadModal (
         console.log('success', formattedUrl, fileKey)
   
         await updateUserInfoApi({ id: user.id, profilePictureUrl: formattedUrl });
-        // clearSelectedAsset();
+        setUser({
+          ...user,
+          profilePictureUrl: formattedUrl
+        })
+        clearSelectedAsset();
+        setShow(false);
       },
       onError: (err) => {
         console.error('Upload Error:', err);
