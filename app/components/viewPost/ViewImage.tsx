@@ -4,14 +4,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 
 export default function ViewImage(
-  { imageUrl, idx, selectedPost, currentPage, handleTap }: 
-  { imageUrl: string, idx: number, selectedPost: any, currentPage: number, handleTap: () => void }
+  { imageUrl, idx, selectedPost, currentPage, handleTap, handleRouterBack }: 
+  { imageUrl: string, idx: number, selectedPost: any, currentPage: number, handleTap: () => void, handleRouterBack: () => void }
 ) {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.navContainer} onPress={() => router.back()}>
+      <Pressable style={styles.navContainer} onPress={handleRouterBack}>
         <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="white" />
       </Pressable>
         <View style={styles.paginationContainer}>

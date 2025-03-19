@@ -6,10 +6,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import uploadStore from '@/store/uploadStore';
 import { useQuery } from '@tanstack/react-query';
 import PostCard from '../components/feed/PostCard';
+import postStore from '@/store/postStore';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('All');
-  const [allPosts, setAllPosts] = useState<any>([]);
+  const { posts, setPosts } = postStore();
   const { isUploading } = uploadStore();
 
   const { data: postsData } = useQuery({
@@ -19,7 +20,7 @@ export default function HomeScreen() {
   })
 
   useEffect(() => {
-    setAllPosts(postsData)
+    setPosts(postsData);
   }, [postsData])
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
@@ -39,8 +40,8 @@ export default function HomeScreen() {
   }
 
   const renderPostCards = () => {
-    if (allPosts) {
-      return allPosts?.map((post: any) => (
+    if (posts) {
+      return posts?.map((post: any) => (
         <PostCard key={post.id} post={post} />
       ))
     }
@@ -93,7 +94,7 @@ export default function HomeScreen() {
             )}
             <View style={styles.contentContainer}>
               {/* Content here: */}
-              {allPosts ? renderPostCards() : <ActivityIndicator />}
+              {posts ? renderPostCards() : <ActivityIndicator />}
             </View>
           </View>
       </ScrollView>

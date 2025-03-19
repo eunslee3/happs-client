@@ -133,7 +133,7 @@ export default function PostDetail({ user, post, commentRef }: { user: any, post
         </Text>
       </View>
 
-      <View style={styles.tagsContainer}>
+      {/* <View style={styles.tagsContainer}>
         <View style={styles.tag}>
           <Text style={{ color: '#9155FF' }}>#Travel</Text>
         </View>
@@ -149,7 +149,7 @@ export default function PostDetail({ user, post, commentRef }: { user: any, post
         <View style={styles.tag}>
           <Text style={{ color: '#9155FF' }}>#BBQ</Text>
         </View>
-      </View>
+      </View> */}
 
       <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'bold', color: '#7E8184' }}>
         Comments

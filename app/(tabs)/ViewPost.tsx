@@ -13,7 +13,7 @@ import userStore from '@/store/userStore';
 import { useRouter } from 'expo-router';
 
 export default function ViewPost() {
-  const { selectedPost } = postStore();
+  const { selectedPost, setPosts, posts } = postStore();
   const { user } = userStore();
   const [currentPage, setCurrentPage] = useState(0);
   const queryClient = new QueryClient();
@@ -36,6 +36,20 @@ export default function ViewPost() {
     setIsLiked(!isLiked);
     setLikes(isLiked ? likes - 1 : likes + 1);
     mutation.mutate();
+    const { id: postId } = selectedPost;
+    const likedPost = { 
+      ...selectedPost, 
+      like: [
+        ...selectedPost.like,
+        {
+          postId,
+          userId: user.id
+        }
+      ],
+      likes: !isLiked ? selectedPost.likes + 1 : selectedPost.likes === 0 ? 0 : selectedPost.likes - 1
+    }
+    const filterPosts = posts.filter((post) => post.id !== postId)
+    setPosts([...filterPosts, likedPost])
   }
 
   // Custom tap event handler - like/unlike a post
@@ -52,6 +66,8 @@ export default function ViewPost() {
       }, 300);
     }
   };
+
+  console.log(selectedPost)
 
   const mutation = useMutation({
     mutationFn: () => likePost(user.id, selectedPost.id),
@@ -79,6 +95,7 @@ export default function ViewPost() {
               currentPage={currentPage} 
               idx={idx}
               handleTap={handleTap}
+              handleRouterBack={handleRouterBack}
             />
           ) : (
             <ViewImage 
@@ -88,6 +105,7 @@ export default function ViewPost() {
               selectedPost={selectedPost} 
               currentPage={currentPage}
               handleTap={handleTap}
+              handleRouterBack={handleRouterBack}
             />
           )}
         </View>

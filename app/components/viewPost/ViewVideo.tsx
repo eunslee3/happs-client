@@ -4,8 +4,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 
 export default function ViewVideo(
-  { videoSource, idx, selectedPost, currentPage, handleTap }: 
-  { videoSource: any, idx: number, selectedPost: any, currentPage: number, handleTap: () => void }
+  { videoSource, idx, selectedPost, currentPage, handleTap, handleRouterBack }: 
+  { videoSource: any, idx: number, selectedPost: any, currentPage: number, handleTap: () => void, handleRouterBack: () => void }
 ) {
 
   const player = useVideoPlayer(videoSource, (player) => {
@@ -17,7 +17,7 @@ export default function ViewVideo(
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.navContainer} onPress={() => router.back()}>
+      <Pressable style={styles.navContainer} onPress={handleRouterBack}>
         <AntDesign style={{ marginLeft: 10 }} name="left" size={24} color="black" />
       </Pressable>
       <View style={styles.videoContainer}>
