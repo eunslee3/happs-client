@@ -67,8 +67,6 @@ export default function ViewPost() {
     }
   };
 
-  console.log(selectedPost)
-
   const mutation = useMutation({
     mutationFn: () => likePost(user.id, selectedPost.id),
     onError: (error) => {

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function TabLayout() {
   const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
     <Tabs
@@ -32,8 +33,7 @@ export default function TabLayout() {
               style={{ width: 24, height: 24, tintColor: color }}
             />
           ),
-          headerShown: false,
-          backBehavior: 'none'
+          headerShown: false
         }}
       />
       <Tabs.Screen

@@ -19,9 +19,7 @@ export default function PhotoGallery() {
   const screenHeight = Dimensions.get('window').height;
   const router = useRouter();
   const [scrollY] = useState(new Animated.Value(0));
-  const [currentHeight, setCurrentHeight] = useState<number>(0)
-  const heightBeforeScroll = screenHeight * 0.5;
-  const heightAfterScroll = 0;
+  const previewContainerHeight = screenHeight * 0.5;
   const playerRef = useRef<any>(null); // To directly control the player
   const { setSelectedAsset, selectedAsset } = assetsStore();
   const { path } = useLocalSearchParams();
@@ -40,7 +38,7 @@ export default function PhotoGallery() {
     }
     if (path === 'Profile') {
       router.push({
-        pathname: '../(tabs)/Profile'
+        pathname: '../(tabs)/Profile',
       })
     }
   }
@@ -58,64 +56,55 @@ export default function PhotoGallery() {
       setAfter(fetchedAssets.endCursor); // Update after for further pagination
     }
   };
-
+  
   const handleItemPress = (item: any) => {
     setSelectedAsset(item);
-    setCurrentHeight(0);
     setShowPreview(false);
   }
 
   useEffect(() => {
-    setShowPreview(true);
+    if (showPreview === false) {
+      setShowPreview(true);
+    }
   }, [showPreview])
 
   useEffect(() => {
-    async function getAssets() {
-      let fetchedAssets
-      if (permissionResponse?.status !== 'granted') {
+    const getAssets = async () => {
+      if (!permissionResponse || permissionResponse.status !== 'granted') {
         await requestPermission();
       }
-
+      let fetchedAssets;
       if (path === 'Profile') {
         fetchedAssets = await MediaLibrary.getAssetsAsync({
-          mediaType: [MediaLibrary.MediaType.photo], // Fetch both photos and videos
-          first: 100  // You can adjust this value to get more or fewer assets
+          mediaType: [MediaLibrary.MediaType.photo],
+          first: 100,
         });
       } else {
-        await MediaLibrary.getAssetsAsync({
-          mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video], // Fetch both photos and videos
-          first: 100  // You can adjust this value to get more or fewer assets
+        fetchedAssets = await MediaLibrary.getAssetsAsync({
+          mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+          first: 100,
         });
       }
-
       if (fetchedAssets) {
-        // Get all assets (images and videos) from the media library
         setAfter(fetchedAssets.endCursor);
         setAssets(fetchedAssets.assets);
-        await setSelectedAsset(fetchedAssets.assets[0]);
+        setSelectedAsset(fetchedAssets.assets[0]);
       }
-    }
-    
+    };
     getAssets();
   }, [permissionResponse]);
 
-  useEffect(() => {
-    const listener = scrollY.addListener(({ value }) => {
-      // Track the animated value as a regular number
-      setCurrentHeight(value);
-    });
-
-    return () => {
-      scrollY.removeListener(listener);
-    };
-  }, [scrollY]);
+  const handleNavigateBack = () => {
+    setSelectedAsset([]);
+    router.back();
+  }
 
   return (
     <View style={[styles.container, { width: screenWidth }]}>
       <View
         style={styles.previewContainer}>
         <View style={styles.previewHeaderContainer}>
-          <Pressable style={styles.left} onPress={() => router.back()}>
+          <Pressable style={styles.left} onPress={handleNavigateBack}>
             <AntDesign name="close" size={24} color="white" />
           </Pressable>
           <Text style={[styles.center, { color: 'white', fontSize: 18 }]}>New Post</Text>
@@ -123,25 +112,22 @@ export default function PhotoGallery() {
             <Text style={{ color: '#00DCB7', fontSize: 18, textAlign: 'right', paddingRight: 10 }}>Add</Text>
           </Pressable>
         </View>
-        <Animated.View 
-          style={[styles.assetPreviewContainer, {
-            height: (currentHeight < 1 ? heightBeforeScroll : heightAfterScroll), // Dynamically change the height as user scrolls
-          }]}>
-          {selectedAsset && showPreview && currentHeight < 1? 
+        <View style={[styles.assetPreviewContainer, { height: previewContainerHeight }]}>
+          {selectedAsset && showPreview ? 
             <PreviewAsset
               selectedAsset={selectedAsset}
               playerRef={playerRef}
-            /> 
+            />
             : 
             null
           }
-        </Animated.View>
+        </View>
       </View>
       {assets.length > 0 ? (
         <AnimatedFlatList
           data={assets}
           keyExtractor={(item: any) => item.id}
-          numColumns={4} // 3 items per row
+          numColumns={4}
           renderItem={({ item }: { item: any }) => (
             <GalleryItem uri={item.uri} mediaType={item.mediaType} item={item} callBack={handleItemPress}/>
           )}
@@ -203,5 +189,8 @@ const styles = StyleSheet.create({
   assetPreviewContainer: {
     // flex: 1,
     width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });

@@ -318,7 +318,7 @@ export default function CreatePost() {
               value={form.allowComments}
             />
           </View>
-          <View style={styles.switchContainer}>
+          {/* <View style={styles.switchContainer}>
             <Text style={{ fontSize: 14 }}>Participation in leaderboard</Text>
             <Switch 
               onValueChange={(value) => handleSwitchChange(value, 'participateInLeaderboard')}
@@ -326,7 +326,7 @@ export default function CreatePost() {
               thumbColor={form.participateInLeaderboard ? 'white' : '#f4f3f4'}
               value={form.participateInLeaderboard}
             />
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.buttonContainer}>

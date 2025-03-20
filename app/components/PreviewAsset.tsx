@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 
 interface PreviewAssetProps {
   selectedAsset: any;
@@ -15,26 +16,28 @@ export default function PreviewAsset(props: PreviewAssetProps) {
   const [playerKey, setPlayerKey] = useState<number>(0); // Player key to force re-render
 
 
-  // On first render - this is always failing!!!!!!!!!!!!!!!!!!!!!!!!
-  // Function to copy the asset to a temporary file location
   const copyAssetToTempFile = async (uri: string) => {
     try {
-      // Come back to this:
-      // File URI does not change unless we hide then show the component again
-      // Goal: Change the file URI without having to re-render this whole component
-      const fileUri = FileSystem.documentDirectory + `temp_video.mp4`; // Path for temporary file
-      const fileExists = await FileSystem.getInfoAsync(fileUri);
-      if (fileExists.exists) {
-        // Delete the existing file
-        await FileSystem.deleteAsync(fileUri, { idempotent: true });
+      let fromUri = uri;
+      // If the URI is a photo library asset (ph://...), extract its ID and get a local URI
+      if (uri.startsWith('ph://')) {
+        // Extract asset id from URI; e.g., "ph://812A4B3A-089D-49FD-9331-37E590304413/L0/001" becomes "812A4B3A-089D-49FD-9331-37E590304413"
+        const assetId = uri.split('ph://')[1].split('/')[0];
+        const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+        if (assetInfo && assetInfo.localUri) {
+          fromUri = assetInfo.localUri;
+        }
       }
-
+      
+      // Generate a unique temp file name using a timestamp
+      const fileUri = FileSystem.documentDirectory + `temp_video_${Date.now()}.mp4`;
+  
       // Now copy the asset to the temp file
       await FileSystem.copyAsync({
-        from: uri,
+        from: fromUri,
         to: fileUri,
       });
-
+  
       return fileUri;
     } catch (error) {
       console.error('Error copying asset to temp file:', error);
@@ -71,9 +74,9 @@ export default function PreviewAsset(props: PreviewAssetProps) {
   return (
     <View style={styles.container}>
       {selectedAsset?.mediaType === 'photo' ? (
-        <Image source={{ uri: selectedAsset.uri }} style={styles.image} />
+        selectedAsset.uri ? <Image source={{ uri: selectedAsset.uri }} style={styles.image} /> : <Text style={{ color: 'white', fontSize: 16 }}>Loading...</Text>
       ) : (
-        videoSource && (
+        videoSource ? (
           <VideoView
             key={playerKey} // Force re-render with the key
             style={styles.video} 
@@ -81,6 +84,8 @@ export default function PreviewAsset(props: PreviewAssetProps) {
             contentFit="cover"
           />
         )
+        :
+        <Text style={{ color: 'white', fontSize: 16 }}>Loading...</Text>
       )}
     </View>
   );

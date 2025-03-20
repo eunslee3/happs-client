@@ -12,6 +12,8 @@ interface UploadState {
   clearProgress: () => void;
   clearFileObjs: () => void;
   clearSubmittedForm: () => void;
+  isUploadingPfp: boolean;
+  setIsUploadingPfp: (isUploading: boolean) => void;
 }
 
 const uploadStore = create<UploadState>((set) => ({
@@ -27,6 +29,8 @@ const uploadStore = create<UploadState>((set) => ({
   clearFileObjs: () => set({ fileObjs: [] }),
   clearProgress: () => set({ progress: 0 }),
   clearSubmittedForm: () => set({ submittedForm: {} }),
+  isUploadingPfp: false,
+  setIsUploadingPfp: (isUploadingPfp: boolean) => set({ isUploadingPfp })
 }));
 
 export default uploadStore;

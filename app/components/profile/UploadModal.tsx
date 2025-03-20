@@ -15,12 +15,14 @@ export default function UploadModal (
   { 
     selectedAsset, 
     clearSelectedAsset,
-    setShow
+    setShow,
+    setIsUploadingPfp
   }: 
   { 
     selectedAsset: any, 
     clearSelectedAsset: () => void,
-    setShow: (show: boolean) => void
+    setShow: (show: boolean) => void,
+    setIsUploadingPfp: (isUploading: boolean) => void,
   }
 ) {
   const { user, setUser } = userStore();
@@ -105,11 +107,13 @@ export default function UploadModal (
 
   const handlePress = () => {
     uploadFilesMutation.mutate(selectedAsset);
+    setIsUploadingPfp(false);
   }
 
   const handleCancel = () => {
     clearSelectedAsset();
     setShow(false);
+    setIsUploadingPfp(false);
   }
 
   return (

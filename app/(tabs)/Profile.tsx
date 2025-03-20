@@ -8,6 +8,7 @@ import ProfileGallery from '../components/ProfileGallery';
 import { useRouter, usePathname  } from 'expo-router';
 import assetsStore from '@/store/assetStore';
 import UploadModal from '../components/profile/UploadModal';
+import uploadStore from '@/store/uploadStore';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('All');
@@ -16,6 +17,7 @@ export default function Profile() {
   const router = useRouter();
   const pathname = usePathname();
   const { selectedAsset, clearSelectedAsset } = assetsStore();
+  const { isUploadingPfp, setIsUploadingPfp }= uploadStore();
 
   const handleToggleActiveTab = (tab: 'All' | 'Clips' | 'Posts') => {
     switch (tab){
@@ -33,17 +35,18 @@ export default function Profile() {
     }
   }
 
-  const handleNavigate = () => {
+  const handlePfpUpload = () => {
+    setIsUploadingPfp(true);
     router.push({ pathname: '../components/PhotoGallery', params: {
       path: 'Profile'
     }})
   }
 
   useEffect(() => {
-    if (selectedAsset?.id && pathname === '/Profile') {
+    if (isUploadingPfp && selectedAsset?.id && pathname === '/Profile') {
       setShow(true);
     }
-  }, [selectedAsset, pathname])
+  }, [selectedAsset, pathname, isUploadingPfp])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,7 +54,7 @@ export default function Profile() {
         transparent={true}
         visible={show}
       >
-        <UploadModal selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset} setShow={setShow}/>
+        <UploadModal setIsUploadingPfp={setIsUploadingPfp} selectedAsset={selectedAsset} clearSelectedAsset={clearSelectedAsset} setShow={setShow} />
       </Modal>
       <ScrollView>
       <View style={styles.headerContainer}>
@@ -62,7 +65,7 @@ export default function Profile() {
       <View style={styles.userInfoContainer}>
         <View style={styles.pfpAndNameContainer}>
           {/* Add press event here to upload or edit a pfp */}
-          <Pressable onPress={handleNavigate}> 
+          <Pressable onPress={handlePfpUpload}> 
               <View style={styles.defaultProfilePicture}>
                 {user.profilePictureUrl ? 
                   <Image
